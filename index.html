@@ -320,7 +320,7 @@
     <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
 
     <script>
-        // আপনার ফায়ারবেস কনফিগারেশন (একই থাকবে, তবে ডাটাবেজ টেবিলের নামগুলো m3_ দেওয়া হলো সম্পূর্ণ আলাদা রাখতে)
+        // ফায়ারবেস কনফিগারেশন 
         const firebaseConfig = {
             apiKey: "AIzaSyDG57Z-2T1KqzTzF-DuP7Mfk84D2SRPMZ4",
             authDomain: "annur-international-madrasah.firebaseapp.com",
@@ -333,7 +333,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let universalLogo = localStorage.getItem('m3_logo') || 'https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg'; // ডিফল্ট আপনি চাইলে পালটে দিতে পারবেন সেটিং থেকে
+        let universalLogo = localStorage.getItem('m3_logo') || 'https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg';
         let madrasahName = localStorage.getItem('m3_name') || 'REZA E MOSTAFA (SM.) MODEL MADRASAH';
         
         let subjectConfig = [
@@ -886,30 +886,37 @@
             } finally { btn.innerHTML = origText; }
         }
 
+        // PRINT FUNCTION FIX FOR BLANK PAGE
         async function executeIsolatedTranscriptPrint() {
             const container = document.getElementById('pdf-export-container');
             await autoFitA4Marksheet('target-transcript-a4-node');
             const printFrame = document.getElementById('isolated-print-frame');
             const frameDoc = printFrame.contentWindow.document;
             const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+            
             frameDoc.open();
             frameDoc.write(`
                 <!DOCTYPE html><html><head><title>Print Transcript</title>
                 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Amiri:wght@700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
-                <script src="https://cdn.tailwindcss.com"><\/script>
                 ${styles}
                 <style>
+                    @media print { 
+                        body * { visibility: visible !important; } 
+                    }
                     @page { size: A4 portrait; margin: 10mm; }
-                    html, body { width: 190mm; height: 277mm; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-                    .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.9); transform-origin: center center; }
+                    html, body { width: 190mm; height: 277mm; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
+                    .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.9); transform-origin: top center; margin-top: 10mm; }
                     .a4-print-wrapper { box-shadow: none !important; margin: 0 auto !important; }
-                    html, body, .print-safe-wrap, .print-safe-wrap * { visibility: visible !important; }
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
                 </style>
                 </head><body><div class="print-safe-wrap">${container.outerHTML}</div></body></html>
             `);
             frameDoc.close();
-            setTimeout(() => { printFrame.contentWindow.focus(); printFrame.contentWindow.print(); }, 1000);
+            
+            setTimeout(() => { 
+                printFrame.contentWindow.focus(); 
+                printFrame.contentWindow.print(); 
+            }, 1200);
         }
 
         // SETTINGS
