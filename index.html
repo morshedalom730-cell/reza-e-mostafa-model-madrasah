@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result System - REZA E MOSTAFA MODEL MADRASAH</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.13.0/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700&family=Montserrat:wght@600;800;900&family=Cinzel:wght@700;800;900&family=Amiri:wght@700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Anek Bangla', sans-serif; background-color: #f0f4f8; }
+        .font-brand { font-family: 'Cinzel', serif; }
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+        .font-serif-roman { font-family: "Times New Roman", Times, serif; }
+        .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
+        
+        /* CANONICAL A4 MARKSHEET SYSTEM (NEW BLUE STYLE) */
+        .a4-print-wrapper {
+            width: 794px; height: 1123px; background-color: #ffffff; margin: 0 auto;
+            position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .islamic-a4-sheet {
+            width: 794px; min-height: 1123px; background: transparent;
+            border: 4px solid #1e3a8a; /* Blue Outer Border */
+            padding: 4px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
+        }
+        .blue-inner-border {
+            border: 6px double #1e3a8a; width: 100%; height: 100%; flex-grow: 1;
+            padding: 24px 28px; box-sizing: border-box; display: flex; flex-direction: column;
+            justify-content: space-between; position: relative;
+        }
+        .marksheet-large-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 450px; height: 450px; opacity: 0.10; pointer-events: none; z-index: 1; object-fit: contain;
+        }
+        
+        .blue-inner-border table, .blue-inner-border th, .blue-inner-border td {
+            background-color: transparent !important; background: transparent !important;
+        }
+        .blue-inner-border table { background: rgba(255, 255, 255, 0.85) !important; position: relative; z-index: 10; }
+
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
+            body * { visibility: hidden !important; }
+            #printable-area, #printable-area * { visibility: visible !important; }
+            #printable-area { display: block !important; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+            @page { size: A4 landscape; margin: 10mm; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-blue-500 selection:text-white">
+
+    <!-- SECURE LOGIN SCREEN -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-blue-950 px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full border-t-4 border-amber-500 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center text-3xl shadow"><i class="fa-solid fa-graduation-cap"></i></div>
+            <h2 class="text-xl font-bold text-blue-950 mb-1">Result System</h2>
+            <p class="text-xs text-gray-500 mb-5 font-bold uppercase tracking-wide">REZA E MOSTAFA (SM.) MODEL MADRASAH</p>
+            <input type="password" id="login-password" class="w-full p-3 border-2 border-blue-100 rounded-xl mb-4 font-bold text-center outline-none focus:border-blue-600" placeholder="Enter Password">
+            <button onclick="checkAdminLogin()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl transition shadow-lg">Access Portal</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP DASHBOARD -->
+    <div id="admin-dashboard" class="hidden flex-grow pb-12">
+        <nav class="bg-blue-950 text-white shadow-xl sticky top-0 z-50 no-print">
+            <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3">
+                <h1 class="font-bold text-base md:text-lg text-amber-400"><i class="fa-solid fa-server mr-2"></i>RMS CLOUD</h1>
+                <div class="flex items-center gap-4 text-xs font-semibold overflow-x-auto">
+                    <button onclick="switchTab('students')" id="tab-students" class="text-amber-300 border-b-2 border-amber-300 pb-1">Students</button>
+                    <button onclick="switchTab('marks')" id="tab-marks" class="hover:text-amber-300 pb-1">Marks Entry</button>
+                    <button onclick="switchTab('print')" id="tab-print" class="hover:text-amber-300 pb-1">Print Results</button>
+                    <button onclick="switchTab('settings')" id="tab-settings" class="hover:text-amber-300 pb-1"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto px-4 pt-6 max-w-6xl space-y-6">
+            
+            <!-- TAB 1: STUDENTS -->
+            <div id="sec-students" class="space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
+                        <h3 class="text-lg font-bold text-blue-950"><i class="fa-solid fa-user-plus text-amber-600 mr-2"></i>Student Registration</h3>
+                        <span id="total-registered-badge" class="bg-blue-800 text-white text-xs px-4 py-1.5 rounded-full font-bold shadow">Total: 0</span>
+                    </div>
+                    <form onsubmit="handleRegisterStudent(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div><label class="block font-bold mb-1 text-gray-700">Student Name *</label><input type="text" id="reg-name" required class="w-full p-2.5 border border-gray-300 rounded-xl font-medium uppercase"></div>
+                        <div><label class="block font-bold mb-1 text-gray-700">Father's Name *</label><input type="text" id="reg-father" required class="w-full p-2.5 border border-gray-300 rounded-xl font-medium uppercase"></div>
+                        <div><label class="block font-bold mb-1 text-gray-700">Student ID *</label><input type="text" id="reg-id" required class="w-full p-2.5 border border-gray-300 rounded-xl font-bold uppercase"></div>
+                        
+                        <div>
+                            <label class="block font-bold mb-1 text-gray-700">Level / Class *</label>
+                            <select id="reg-class" required class="w-full p-2.5 border border-gray-300 rounded-xl bg-gray-50 font-semibold cursor-pointer">
+                                <option value="LEVEL-1">LEVEL-1</option><option value="LEVEL-2">LEVEL-2</option><option value="LEVEL-3">LEVEL-3</option>
+                                <option value="LEVEL-4">LEVEL-4</option><option value="LEVEL-5">LEVEL-5</option><option value="LEVEL-6">LEVEL-6</option>
+                                <option value="LEVEL-7">LEVEL-7</option><option value="LEVEL-8">LEVEL-8</option><option value="LEVEL-9">LEVEL-9</option><option value="LEVEL-10">LEVEL-10</option>
+                            </select>
+                        </div>
+                        <div><label class="block font-bold mb-1 text-gray-700">Mobile Number</label><input type="tel" id="reg-phone" class="w-full p-2.5 border border-gray-300 rounded-xl"></div>
+                        <div>
+                            <label class="block font-bold mb-1 text-gray-700">Status</label>
+                            <select id="reg-status" class="w-full p-2.5 border border-gray-300 rounded-xl bg-gray-50 font-semibold">
+                                <option value="Active" selected>Active</option>
+                                <option value="Deactivated">Deactivated</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3 flex justify-end mt-2">
+                            <button type="submit" id="reg-submit-btn" class="bg-blue-800 text-white font-bold py-3 px-8 rounded-xl shadow w-full md:w-auto hover:bg-blue-900 transition"><i class="fa-solid fa-check mr-1"></i> Save Student Data</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                        <input type="text" id="student-db-search" onkeyup="renderStudentDBTable()" placeholder="Search by ID or Name..." class="p-2.5 border border-gray-300 rounded-xl w-full max-w-sm text-xs font-bold text-blue-900">
+                        <select id="student-db-search-class" onchange="renderStudentDBTable()" class="p-2.5 border border-gray-300 rounded-xl text-xs font-bold text-blue-950 bg-gray-50">
+                            <option value="ALL" selected>All Levels</option>
+                            <option value="LEVEL-1">LEVEL-1</option><option value="LEVEL-2">LEVEL-2</option><option value="LEVEL-3">LEVEL-3</option>
+                            <option value="LEVEL-4">LEVEL-4</option><option value="LEVEL-5">LEVEL-5</option><option value="LEVEL-6">LEVEL-6</option>
+                            <option value="LEVEL-7">LEVEL-7</option><option value="LEVEL-8">LEVEL-8</option><option value="LEVEL-9">LEVEL-9</option><option value="LEVEL-10">LEVEL-10</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-blue-900 text-white">
+                                    <th class="p-2.5 border border-blue-800">ID</th><th class="p-2.5 border border-blue-800">Name</th><th class="p-2.5 border border-blue-800">Father's Name</th>
+                                    <th class="p-2.5 border border-blue-800">Level</th><th class="p-2.5 border border-blue-800">Mobile</th>
+                                    <th class="p-2.5 border border-blue-800">Status</th><th class="p-2.5 border border-blue-800 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-db-table-body" class="bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: MARKS ENTRY -->
+            <div id="sec-marks" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 space-y-5">
+                    <div class="flex flex-wrap justify-between items-center border-b border-gray-200 pb-3 gap-2">
+                        <h3 class="text-lg font-bold text-blue-950"><i class="fa-solid fa-file-excel text-green-600 mr-2"></i>Results & Marks Entry</h3>
+                        <div class="flex gap-2">
+                            <button onclick="addSubjectColumn()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 text-xs px-3.5 py-2 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Add Subject</button>
+                            <button onclick="syncRegisteredStudentsToResults()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3.5 py-2 rounded-xl font-bold shadow transition"><i class="fa-solid fa-rotate mr-1"></i> Sync Students</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <label class="block font-bold text-blue-900 mb-1">Select Level:</label>
+                            <select id="admin-global-class" onchange="renderExcelTable()" class="w-full p-2.5 border border-gray-300 rounded-xl font-bold bg-white text-blue-950">
+                                <option value="LEVEL-1">LEVEL-1</option><option value="LEVEL-2">LEVEL-2</option><option value="LEVEL-3">LEVEL-3</option>
+                                <option value="LEVEL-4">LEVEL-4</option><option value="LEVEL-5">LEVEL-5</option><option value="LEVEL-6">LEVEL-6</option>
+                                <option value="LEVEL-7">LEVEL-7</option><option value="LEVEL-8">LEVEL-8</option><option value="LEVEL-9">LEVEL-9</option><option value="LEVEL-10">LEVEL-10</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-blue-900 mb-1">Session:</label>
+                            <select id="admin-global-session" class="w-full p-2.5 border border-gray-300 rounded-xl font-bold bg-white text-blue-950">
+                                <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                                <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                                <option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-blue-900 mb-1">Term:</label>
+                            <select id="admin-global-exam" class="w-full p-2.5 border border-gray-300 rounded-xl font-bold bg-white text-blue-950">
+                                <option value="Monthly Examination">Monthly Examination</option>
+                                <option value="1st Term Examination">1st Term Examination</option>
+                                <option value="Half Yearly Examination">Half Yearly Examination</option>
+                                <option value="2nd Term Examination">2nd Term Examination</option>
+                                <option value="Annual Examination" selected>Annual Examination</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border border-gray-300 rounded-xl mb-4">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead><tr id="excel-header-row" class="bg-blue-900 text-white"></tr></thead>
+                            <tbody id="excel-table-body" class="bg-white"></tbody>
+                        </table>
+                    </div>
+                    <button onclick="saveExcelData()" class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow w-full md:w-auto transition"><i class="fa-solid fa-floppy-disk mr-1"></i> Save Results to Cloud</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: PRINT RESULTS -->
+            <div id="sec-print" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="flex justify-center space-x-3 border-b border-gray-200 pb-4 mb-6 no-print">
+                        <button onclick="toggleResultTab('personal')" id="tab-btn-personal" class="bg-blue-900 text-amber-300 px-6 py-2 rounded-xl text-sm font-bold shadow transition">Individual Marksheet</button>
+                        <button onclick="toggleResultTab('class')" id="tab-btn-class" class="bg-gray-100 text-gray-700 px-6 py-2 rounded-xl text-sm font-bold hover:bg-gray-200 transition">Tabulation Sheet</button>
+                    </div>
+
+                    <!-- Personal Print -->
+                    <div id="result-view-personal" class="max-w-xl mx-auto no-print">
+                        <div class="space-y-4 text-xs md:text-sm">
+                            <div>
+                                <label class="block font-bold mb-1.5 text-gray-700">Student ID *</label>
+                                <input type="text" id="search-student-id" placeholder="e.g. R25000" class="w-full p-3 border border-gray-300 rounded-xl font-semibold uppercase">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-gray-700">Class *</label>
+                                    <select id="search-student-class" class="w-full p-2.5 border border-gray-300 rounded-xl bg-gray-50 font-semibold">
+                                        <option value="LEVEL-1">LEVEL-1</option><option value="LEVEL-2">LEVEL-2</option><option value="LEVEL-3">LEVEL-3</option>
+                                        <option value="LEVEL-4">LEVEL-4</option><option value="LEVEL-5">LEVEL-5</option><option value="LEVEL-6">LEVEL-6</option>
+                                        <option value="LEVEL-7">LEVEL-7</option><option value="LEVEL-8">LEVEL-8</option><option value="LEVEL-9">LEVEL-9</option><option value="LEVEL-10">LEVEL-10</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-gray-700">Session *</label>
+                                    <select id="search-student-session" class="w-full p-2.5 border border-gray-300 rounded-xl bg-gray-50 font-semibold">
+                                        <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                                        <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                                        <option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-gray-700">Exam Term *</label>
+                                <select id="search-student-exam" class="w-full p-2.5 border border-gray-300 rounded-xl bg-gray-50 font-semibold">
+                                    <option value="Monthly Examination">Monthly Examination</option>
+                                    <option value="1st Term Examination">1st Term Examination</option>
+                                    <option value="Half Yearly Examination">Half Yearly Examination</option>
+                                    <option value="2nd Term Examination">2nd Term Examination</option>
+                                    <option value="Annual Examination" selected>Annual Examination</option>
+                                </select>
+                            </div>
+                            <button onclick="searchResult()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-xl shadow-lg transition">Generate Marksheet</button>
+                        </div>
+                    </div>
+
+                    <!-- Class Print -->
+                    <div id="result-view-class" class="hidden no-print">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 max-w-2xl mx-auto text-xs md:text-sm">
+                            <div>
+                                <label class="block font-bold text-gray-600 mb-1">Level / Class *</label>
+                                <select id="class-result-dropdown" class="p-2.5 border border-gray-300 rounded-xl w-full bg-gray-50 font-bold text-blue-950">
+                                    <option value="LEVEL-1">LEVEL-1</option><option value="LEVEL-2">LEVEL-2</option><option value="LEVEL-3">LEVEL-3</option>
+                                    <option value="LEVEL-4">LEVEL-4</option><option value="LEVEL-5">LEVEL-5</option><option value="LEVEL-6">LEVEL-6</option>
+                                    <option value="LEVEL-7">LEVEL-7</option><option value="LEVEL-8">LEVEL-8</option><option value="LEVEL-9">LEVEL-9</option><option value="LEVEL-10">LEVEL-10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-600 mb-1">Session *</label>
+                                <select id="class-session-dropdown" class="p-2.5 border border-gray-300 rounded-xl w-full bg-gray-50 font-bold text-blue-950">
+                                    <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                                    <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                                    <option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-600 mb-1">Exam Term *</label>
+                                <select id="class-exam-dropdown" class="p-2.5 border border-gray-300 rounded-xl w-full bg-gray-50 font-bold text-blue-950">
+                                    <option value="Monthly Examination">Monthly Examination</option>
+                                    <option value="1st Term Examination">1st Term Examination</option>
+                                    <option value="Half Yearly Examination">Half Yearly Examination</option>
+                                    <option value="2nd Term Examination">2nd Term Examination</option>
+                                    <option value="Annual Examination" selected>Annual Examination</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="showClassResultSheet()" class="w-full max-w-md mx-auto block bg-blue-900 text-amber-300 py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg hover:bg-blue-950 transition">Generate Tabulation Sheet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: SETTINGS -->
+            <div id="sec-settings" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-base font-bold text-blue-950 border-b border-gray-200 pb-2 mb-4">Madrasah Details & Logo</h3>
+                        <div class="space-y-4 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1 text-gray-700">Madrasah Name</label>
+                                <input type="text" id="set-madrasah-name" class="w-full p-2.5 border border-gray-300 rounded-xl font-bold text-blue-950" value="REZA E MOSTAFA (SM.) MODEL MADRASAH">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-gray-700">Universal Logo Image</label>
+                                <div class="flex items-center gap-3">
+                                    <img id="admin-logo-preview" src="" class="universal-logo-target w-12 h-12 object-contain border rounded bg-white">
+                                    <input type="file" id="universal-logo-file" accept="image/*" class="w-full p-2 border border-gray-300 rounded-xl text-xs">
+                                </div>
+                            </div>
+                            <button onclick="saveSettings()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 w-full py-2.5 rounded-xl font-bold text-xs shadow transition">Save Settings</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-base font-bold text-blue-950 border-b border-gray-200 pb-2 mb-4">Security & Reset</h3>
+                        <div class="space-y-4 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1 text-gray-700">Change Panel Password</label>
+                                <input type="password" id="new-admin-pass" placeholder="New Admin Password" class="w-full p-2.5 border border-gray-300 rounded-xl font-bold">
+                            </div>
+                            <button onclick="changeAdminPassword()" class="bg-gray-800 hover:bg-gray-900 text-white w-full py-2.5 rounded-xl font-bold shadow transition">Update Password</button>
+                            <hr class="border-gray-200">
+                            <button onclick="clearAllSystemStorageWithPassword()" class="bg-red-700 hover:bg-red-800 text-white w-full py-2.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-trash mr-1"></i> Delete All Data (Factory Reset)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="printable-area" class="mt-4 hidden no-print"></div>
+        </div>
+    </div>
+
+    <!-- Hidden iframe for Print Isolation -->
+    <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
+
+    <script>
+        // আপনার ফায়ারবেস কনফিগারেশন (একই থাকবে, তবে ডাটাবেজ টেবিলের নামগুলো m3_ দেওয়া হলো সম্পূর্ণ আলাদা রাখতে)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDG57Z-2T1KqzTzF-DuP7Mfk84D2SRPMZ4",
+            authDomain: "annur-international-madrasah.firebaseapp.com",
+            databaseURL: "https://annur-international-madrasah-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "annur-international-madrasah",
+            storageBucket: "annur-international-madrasah.firebasestorage.app",
+            messagingSenderId: "85025774102",
+            appId: "1:85025774102:web:9f15c8aa9fa59b49f33337"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let universalLogo = localStorage.getItem('m3_logo') || 'https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg'; // ডিফল্ট আপনি চাইলে পালটে দিতে পারবেন সেটিং থেকে
+        let madrasahName = localStorage.getItem('m3_name') || 'REZA E MOSTAFA (SM.) MODEL MADRASAH';
+        
+        let subjectConfig = [
+            { name: 'Al Quran', full: 100, type: 'Main' },
+            { name: 'Arabic', full: 100, type: 'Main' },
+            { name: 'Bangla', full: 100, type: 'Main' },
+            { name: 'English', full: 100, type: 'Main' },
+            { name: 'Mathematics', full: 100, type: 'Main' }
+        ];
+
+        let registeredStudents = JSON.parse(localStorage.getItem('m3_db')) || [];
+        let excelStudents = JSON.parse(localStorage.getItem('m3_results')) || [];
+
+        function switchTab(tabId) {
+            ['students','marks','print','settings'].forEach(t => {
+                document.getElementById(`sec-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).classList.remove('text-amber-300', 'border-b-2', 'border-amber-300');
+            });
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('text-amber-300', 'border-b-2', 'border-amber-300');
+            document.getElementById('printable-area').classList.add('hidden');
+        }
+
+        function checkAdminLogin() {
+            const pass = document.getElementById('login-password').value;
+            const adminPass = localStorage.getItem('m3_pass') || '1234';
+            if (pass === adminPass) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('set-madrasah-name').value = madrasahName;
+                applyAdminUniversalLogo();
+                initAdminFirebaseSync();
+            } else { alert('Incorrect Password!'); }
+        }
+
+        function applyAdminUniversalLogo() {
+            document.querySelectorAll('.universal-logo-target').forEach(img => img.src = universalLogo);
+            const favicon = document.getElementById('dynamic-favicon');
+            if (favicon) favicon.href = universalLogo;
+        }
+
+        db.ref('m3_settings/logo').once('value').then(snap => {
+            if (snap.exists()) { universalLogo = snap.val(); applyAdminUniversalLogo(); }
+        }).catch(() => {});
+
+        function initAdminFirebaseSync() {
+            db.ref('m3_settings/logo').on('value', snap => { if(snap.exists()) { universalLogo = snap.val(); applyAdminUniversalLogo(); }});
+            db.ref('m3_settings/name').on('value', snap => { if(snap.exists()) { madrasahName = snap.val(); document.getElementById('set-madrasah-name').value = madrasahName; }});
+            db.ref('m3_settings/subjects').on('value', snap => { if (snap.exists()) { subjectConfig = snap.val(); renderExcelTable(); }});
+            db.ref('m3_students').on('value', snap => {
+                if (snap.exists()) {
+                    registeredStudents = Object.values(snap.val());
+                    try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(e){}
+                }
+                renderStudentDBTable();
+            });
+            db.ref('m3_results').on('value', snap => {
+                if (snap.exists()) {
+                    const rawData = snap.val(); const uniqueMap = new Map();
+                    Object.values(rawData).forEach(item => { if (item && item.id) uniqueMap.set(item.id + "_" + item.class, item); });
+                    excelStudents = Array.from(uniqueMap.values());
+                    try { localStorage.setItem('m3_results', JSON.stringify(excelStudents)); } catch(e){}
+                }
+                renderExcelTable();
+            });
+        }
+
+        function compressImage(file, maxWidth = 250, maxHeight = 250, quality = 0.7) {
+            return new Promise((resolve) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if(w > h) { if(w > maxWidth) { h *= maxWidth/w; w = maxWidth; } } 
+                        else { if(h > maxHeight) { w *= maxHeight/h; h = maxHeight; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                };
+            });
+        }
+
+        // REGISTRATION
+        async function handleRegisterStudent(e) {
+            e.preventDefault();
+            const btn = document.getElementById('reg-submit-btn'); const origText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving...'; btn.disabled = true;
+
+            try {
+                const id = document.getElementById('reg-id').value.trim().toUpperCase();
+                const name = document.getElementById('reg-name').value.trim().toUpperCase();
+                const father = document.getElementById('reg-father').value.trim().toUpperCase();
+                const stdClass = document.getElementById('reg-class').value;
+                const phone = document.getElementById('reg-phone').value.trim() || 'N/A';
+                const status = document.getElementById('reg-status').value;
+
+                if (!id || !name) throw new Error("Missing ID or Name");
+                if (registeredStudents.some(s => s.id === id)) { alert(`ID '${id}' is already registered!`); btn.innerHTML = origText; btn.disabled = false; return; }
+
+                const newStudent = { id, name, father, class: stdClass, phone, status };
+                registeredStudents.unshift(newStudent);
+                try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(err){}
+                
+                renderStudentDBTable(); syncRegisteredStudentsToResults(false);
+                db.ref('m3_students/' + id).set(newStudent).catch(err => console.error(err));
+
+                document.getElementById('reg-name').value = ''; document.getElementById('reg-father').value = '';
+                document.getElementById('reg-id').value = ''; document.getElementById('reg-phone').value = '';
+                alert(`Student ${name} registered successfully!`);
+            } catch (error) { alert(error.message); }
+            btn.innerHTML = origText; btn.disabled = false;
+        }
+
+        function renderStudentDBTable() {
+            const tbody = document.getElementById('student-db-table-body');
+            const q = document.getElementById('student-db-search') ? document.getElementById('student-db-search').value.toUpperCase().trim() : '';
+            const cSearch = document.getElementById('student-db-search-class') ? document.getElementById('student-db-search-class').value : 'ALL';
+            
+            if(!tbody) return; tbody.innerHTML = '';
+            document.getElementById('total-registered-badge').innerText = `Total: ${registeredStudents.length}`;
+
+            let filtered = registeredStudents;
+            if(cSearch !== 'ALL') filtered = filtered.filter(s => s.class === cSearch);
+            if(q) filtered = filtered.filter(s => s.id.includes(q) || s.name.includes(q) || s.phone.includes(q));
+
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500 font-bold">No students found.</td></tr>`; return; }
+
+            filtered.forEach((s) => {
+                const statusBadge = s.status === 'Deactivated' ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold text-[10px]">Inactive</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-[10px]">Active</span>';
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-200 hover:bg-blue-50/50">
+                        <td class="p-2.5 font-bold text-blue-950">${s.id}</td><td class="p-2.5 font-bold">${s.name}</td>
+                        <td class="p-2.5">${s.father}</td><td class="p-2.5 font-semibold text-blue-900">${s.class}</td>
+                        <td class="p-2.5 font-medium">${s.phone}</td><td class="p-2.5">${statusBadge}</td>
+                        <td class="p-2.5 text-center">
+                            <button onclick="deleteStudent('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-[10px] shadow"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteStudent(id) {
+            if(confirm('Are you sure you want to permanently delete this student?')) {
+                registeredStudents = registeredStudents.filter(s => s.id !== id);
+                try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(e){}
+                renderStudentDBTable(); db.ref('m3_students/' + id).remove();
+            }
+        }
+
+        // MARKS ENTRY & CALCULATION
+        function calculateStudentResultStats(marksArray) {
+            let total = 0; let validCount = 0; let hasFail = false;
+            let mainPointsSum = 0; let mainSubjectCount = 0; let optionalBonusPoint = 0;
+
+            if (!marksArray || !Array.isArray(marksArray)) return { total: 0, grade: '-', gpa: '0.00', remarks: 'N/A' };
+
+            marksArray.forEach((m, idx) => {
+                if (m !== undefined && m !== null && String(m).trim() !== '' && String(m).trim() !== '-') {
+                    const num = parseFloat(m);
+                    if (!isNaN(num)) {
+                        total += num; validCount++;
+                        const fullMark = (subjectConfig[idx] && subjectConfig[idx].full) ? parseInt(subjectConfig[idx].full) : 100;
+                        const percentage = fullMark === 50 ? (num * 2) : num;
+                        
+                        let gp = 0;
+                        if (percentage < 33) { hasFail = true; gp = 0; }
+                        else if (percentage >= 80) gp = 5.0; else if (percentage >= 70) gp = 4.0;
+                        else if (percentage >= 60) gp = 3.5; else if (percentage >= 50) gp = 3.0;
+                        else if (percentage >= 40) gp = 2.0; else if (percentage >= 33) gp = 1.0;
+
+                        if (subjectConfig[idx] && subjectConfig[idx].type === 'Optional') {
+                            if (gp > 2.0) optionalBonusPoint += (gp - 2.0);
+                        } else { mainPointsSum += gp; mainSubjectCount++; }
+                    }
+                }
+            });
+
+            if (validCount === 0) return { total: 0, grade: '-', gpa: '0.00', remarks: 'Pending' };
+            if (hasFail || mainSubjectCount === 0) return { total: total, grade: 'F', gpa: '0.00', remarks: 'Failed' };
+
+            let baseGpa = mainPointsSum / mainSubjectCount;
+            let finalGpaNum = baseGpa + (optionalBonusPoint / mainSubjectCount);
+            if (finalGpaNum > 5.0) finalGpaNum = 5.0;
+
+            let grade = 'A+'; let remarks = 'Outstanding';
+            if (finalGpaNum >= 5.0) { grade = 'A+'; remarks = 'Outstanding'; }
+            else if (finalGpaNum >= 4.0) { grade = 'A'; remarks = 'Excellent'; }
+            else if (finalGpaNum >= 3.5) { grade = 'A-'; remarks = 'Very Good'; }
+            else if (finalGpaNum >= 3.0) { grade = 'B'; remarks = 'Good'; }
+            else if (finalGpaNum >= 2.0) { grade = 'C'; remarks = 'Satisfactory'; }
+            else if (finalGpaNum >= 1.0) { grade = 'D'; remarks = 'Needs Improvement'; }
+            else { grade = 'F'; remarks = 'Failed'; }
+
+            return { total: total, grade: grade, gpa: finalGpaNum.toFixed(2), remarks: remarks };
+        }
+
+        function getSubjectGradeInfo(markVal, fullMark) {
+            if (markVal === undefined || markVal === null || String(markVal).trim() === '' || String(markVal).trim() === '-') return { lg: '-', gp: '-' };
+            const num = parseFloat(markVal); if (isNaN(num)) return { lg: '-', gp: '-' };
+            const percentage = parseInt(fullMark) === 50 ? (num * 2) : num;
+            if (percentage < 33) return { lg: 'F', gp: '0.0' };
+            if (percentage >= 80) return { lg: 'A+', gp: '5.0' }; if (percentage >= 70) return { lg: 'A', gp: '4.0' };
+            if (percentage >= 60) return { lg: 'A-', gp: '3.5' }; if (percentage >= 50) return { lg: 'B', gp: '3.0' };
+            if (percentage >= 40) return { lg: 'C', gp: '2.0' }; return { lg: 'D', gp: '1.0' };
+        }
+
+        function syncRegisteredStudentsToResults(showAlert = true) {
+            registeredStudents.forEach(reg => {
+                const existing = excelStudents.find(s => s.id === reg.id);
+                if (!existing) {
+                    excelStudents.push({ id: reg.id, name: reg.name, class: reg.class, session: '2026', exam: 'Annual Examination', marks: new Array(subjectConfig.length).fill('') });
+                } else { existing.name = reg.name; existing.class = reg.class; }
+            });
+            renderExcelTable(); if(showAlert) alert('Synced Cadets to Results Board!');
+        }
+
+        function renderExcelTable() {
+            const cls = document.getElementById('admin-global-class').value;
+            const headerRow = document.getElementById('excel-header-row');
+            const tbody = document.getElementById('excel-table-body');
+            if(!headerRow || !tbody) return;
+            const currentStudents = excelStudents.filter(s => s.class === cls);
+
+            let headerHTML = `<th class="p-2 border border-blue-800 w-24">ID</th><th class="p-2 border border-blue-800">Name</th>`;
+            subjectConfig.forEach((subObj, sIdx) => {
+                headerHTML += `<th class="p-2 border border-blue-800 bg-blue-800 text-center">
+                    <div class="space-y-1">
+                        <div class="flex justify-between gap-1"><input type="text" value="${subObj.name}" class="sub-header-input bg-blue-950 text-amber-300 font-bold p-1 rounded w-full border border-blue-700 text-center text-xs" data-idx="${sIdx}"><button onclick="removeSubjectColumn(${sIdx})" class="text-red-400 hover:text-red-200 font-bold px-1 text-xs">×</button></div>
+                        <div class="flex gap-1">
+                            <select onchange="updateSubjectFullMark(${sIdx}, this.value)" class="bg-blue-950 text-white font-bold p-0.5 rounded text-[10px] w-1/2 cursor-pointer border border-blue-700"><option value="100" ${subObj.full==100?'selected':''}>100 M</option><option value="50" ${subObj.full==50?'selected':''}>50 M</option></select>
+                            <select onchange="updateSubjectType(${sIdx}, this.value)" class="bg-blue-950 text-amber-100 font-bold p-0.5 rounded text-[10px] w-1/2 cursor-pointer border border-blue-700"><option value="Main" ${subObj.type === 'Main' ? 'selected' : ''}>Main</option><option value="Optional" ${subObj.type === 'Optional' ? 'selected' : ''}>Opt.</option></select>
+                        </div>
+                    </div></th>`;
+            });
+            headerHTML += `<th class="p-2 border border-blue-800 bg-amber-600 text-blue-950 text-center">Total</th><th class="p-2 border border-blue-800 text-center w-12 bg-red-800">Del</th>`;
+            headerRow.innerHTML = headerHTML; tbody.innerHTML = '';
+
+            if (currentStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="${4 + subjectConfig.length}" class="p-4 text-center font-bold text-gray-500">No students found in ${cls}. Sync first.</td></tr>`; return; }
+
+            currentStudents.forEach((s) => {
+                const realIndex = excelStudents.indexOf(s);
+                const stats = calculateStudentResultStats(s.marks || []);
+                let rowHTML = `<tr class="border-b border-gray-300 hover:bg-blue-50/50"><td class="p-1 border border-gray-300"><input type="text" value="${s.id}" readonly class="ex-id w-20 p-1 font-bold text-center bg-transparent uppercase text-blue-950"></td><td class="p-1 border border-gray-300"><input type="text" value="${s.name}" readonly class="ex-name w-full p-1 font-bold bg-transparent uppercase"></td>`;
+                subjectConfig.forEach((_, sIdx) => {
+                    const markVal = (s.marks && s.marks[sIdx] !== undefined) ? s.marks[sIdx] : '';
+                    rowHTML += `<td class="p-1 border border-gray-300"><input type="text" value="${markVal}" class="ex-mark sub-mark-${sIdx} w-full p-1.5 text-center font-bold text-blue-900 border border-gray-200 rounded"></td>`;
+                });
+                rowHTML += `<td class="p-1 border border-gray-300 text-center font-black text-amber-700 bg-amber-50">${stats.total}</td><td class="p-1 border border-gray-300 text-center"><button onclick="deleteExcelRow(${realIndex})" class="bg-red-600 hover:bg-red-700 text-white font-bold p-1.5 rounded shadow"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                tbody.innerHTML += rowHTML;
+            });
+        }
+
+        function updateSubjectFullMark(sIdx, newFull) { subjectConfig[sIdx].full = parseInt(newFull); db.ref('m3_settings/subjects').set(subjectConfig); renderExcelTable(); }
+        function updateSubjectType(sIdx, newType) { subjectConfig[sIdx].type = newType; db.ref('m3_settings/subjects').set(subjectConfig); renderExcelTable(); }
+        function addSubjectColumn() { saveExcelData(false); subjectConfig.push({ name: `Subject ${subjectConfig.length + 1}`, full: 100, type: 'Main' }); excelStudents.forEach(s => { if(!s.marks) s.marks = []; s.marks.push(''); }); db.ref('m3_settings/subjects').set(subjectConfig); db.ref('m3_results').set(excelStudents); renderExcelTable(); }
+        function removeSubjectColumn(subIdx) {
+            if(subjectConfig.length <= 1) { alert('Minimum 1 subject required!'); return; }
+            if(confirm(`Delete "${subjectConfig[subIdx].name}"?`)) {
+                saveExcelData(false); subjectConfig.splice(subIdx, 1);
+                excelStudents.forEach(s => { if(s.marks) s.marks.splice(subIdx, 1); });
+                db.ref('m3_settings/subjects').set(subjectConfig); db.ref('m3_results').set(excelStudents); renderExcelTable();
+            }
+        }
+        function deleteExcelRow(realIdx) {
+            if (confirm('Delete this result row?')) {
+                const removedStudent = excelStudents.splice(realIdx, 1)[0];
+                try{ localStorage.setItem('m3_results', JSON.stringify(excelStudents)); }catch(e){}
+                renderExcelTable(); if (removedStudent && removedStudent.id) db.ref('m3_results/' + removedStudent.id).remove();
+            }
+        }
+        function saveExcelData(showAlert = true) {
+            const cls = document.getElementById('admin-global-class').value;
+            const exm = document.getElementById('admin-global-exam').value;
+            const ses = document.getElementById('admin-global-session').value;
+            document.querySelectorAll('.sub-header-input').forEach((input, i) => { if(subjectConfig[i]) subjectConfig[i].name = input.value.trim(); });
+            db.ref('m3_settings/subjects').set(subjectConfig);
+
+            const otherClassStudents = excelStudents.filter(s => s.class !== cls);
+            const updatedCurrent = [];
+            document.querySelectorAll('#excel-table-body tr').forEach(row => {
+                const idInput = row.querySelector('.ex-id'); if(!idInput) return;
+                const id = idInput.value; const name = row.querySelector('.ex-name').value;
+                const marks = [];
+                subjectConfig.forEach((_, sIdx) => { const mk = row.querySelector(`.sub-mark-${sIdx}`); marks.push(mk ? mk.value.trim() : ''); });
+                updatedCurrent.push({ id, name, class: cls, session: ses, exam: exm, marks });
+            });
+            excelStudents = [...otherClassStudents, ...updatedCurrent];
+            try{ localStorage.setItem('m3_results', JSON.stringify(excelStudents)); }catch(e){}
+            updatedCurrent.forEach(item => { db.ref('m3_results/' + item.id).set(item); });
+            renderExcelTable(); if(showAlert) alert('Saved to Cloud!');
+        }
+
+        // PRINT RESULTS: TABULATION & INDIVIDUAL (NEW STYLE)
+        function toggleResultTab(tab) {
+            if(tab === 'personal') {
+                document.getElementById('result-view-personal').classList.remove('hidden'); document.getElementById('result-view-class').classList.add('hidden');
+                document.getElementById('tab-btn-personal').className = "bg-blue-900 text-amber-300 px-6 py-2 rounded-xl text-sm font-bold shadow transition";
+                document.getElementById('tab-btn-class').className = "bg-gray-100 text-gray-700 px-6 py-2 rounded-xl text-sm font-bold hover:bg-gray-200 transition";
+            } else {
+                document.getElementById('result-view-personal').classList.add('hidden'); document.getElementById('result-view-class').classList.remove('hidden');
+                document.getElementById('tab-btn-class').className = "bg-blue-900 text-amber-300 px-6 py-2 rounded-xl text-sm font-bold shadow transition";
+                document.getElementById('tab-btn-personal').className = "bg-gray-100 text-gray-700 px-6 py-2 rounded-xl text-sm font-bold hover:bg-gray-200 transition";
+            }
+        }
+
+        function showClassResultSheet() {
+            const cls = document.getElementById('class-result-dropdown').value;
+            const ses = document.getElementById('class-session-dropdown').value;
+            const exm = document.getElementById('class-exam-dropdown').value;
+            const printArea = document.getElementById('printable-area');
+            if(!cls) { alert('Select Level!'); return; }
+
+            const filtered = excelStudents.filter(s => s.class === cls && s.session === ses && s.exam === exm);
+            if(filtered.length === 0) { alert('No results found for this selection.'); return; }
+
+            let thHTML = `
+                <tr class="bg-blue-900 text-white uppercase text-[9px] md:text-[10px]">
+                    <th class="p-1 border border-blue-800 text-center w-8">SL</th>
+                    <th class="p-1 border border-blue-800 text-center w-16">ID</th>
+                    <th class="p-1 border border-blue-800 text-left min-w-[80px]">Student Name</th>
+            `;
+            subjectConfig.forEach(sub => { 
+                thHTML += `<th class="p-1 border border-blue-800 text-center align-middle leading-tight break-words max-w-[70px]">${sub.name}<br><span class="font-normal normal-case text-[8px] text-amber-300">(${sub.full})</span></th>`; 
+            });
+            thHTML += `<th class="p-1 border border-blue-800 bg-amber-600 text-blue-950 font-black text-center">Total</th><th class="p-1 border border-blue-800 bg-amber-600 text-blue-950 font-black text-center">GPA</th><th class="p-1 border border-blue-800 bg-amber-600 text-blue-950 font-black text-center">Grade</th></tr>`;
+
+            let rowsHTML = '';
+            filtered.forEach((s, idx) => {
+                const stats = calculateStudentResultStats(s.marks || []);
+                rowsHTML += `<tr class="text-center border-b border-gray-300 even:bg-blue-50/40 text-[9px] md:text-[10px]"><td class="p-1 border border-gray-300 font-bold">${idx + 1}</td><td class="p-1 border border-gray-300 font-bold text-blue-950">${s.id}</td><td class="p-1 border border-gray-300 text-left font-bold uppercase">${s.name}</td>`;
+                subjectConfig.forEach((_, sIdx) => { const mVal = (s.marks && s.marks[sIdx] && String(s.marks[sIdx]).trim() !== '') ? s.marks[sIdx] : '-'; rowsHTML += `<td class="p-1 border border-gray-300 font-medium text-blue-900">${mVal}</td>`; });
+                rowsHTML += `<td class="p-1 border border-gray-300 font-extrabold text-amber-700 bg-amber-50">${stats.total}</td><td class="p-1 border border-gray-300 font-extrabold text-blue-900 bg-blue-50">${stats.gpa}</td><td class="p-1 border border-gray-300 font-extrabold text-blue-900 bg-blue-50">${stats.grade}</td></tr>`;
+            });
+
+            const sheetHTML = `
+                <div class="bg-white rounded-2xl border-[3px] border-blue-900 shadow-lg overflow-hidden font-serif-roman mt-4">
+                    <div class="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
+                        <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-400 shadow-md shrink-0">
+                        <div class="text-center flex-grow">
+                            <h2 class="font-brand text-xl md:text-2xl font-black tracking-wide uppercase">${madrasahName}</h2>
+                            <p class="text-[11px] text-blue-200 font-semibold">Kaptai Rastar Matha, Mohara, Chandgaon, Chattogram</p>
+                        </div>
+                        <span class="inline-block bg-amber-500 text-blue-950 px-3 py-1 rounded-full font-black text-[11px] uppercase tracking-wide shrink-0 whitespace-nowrap">Tabulation Sheet</span>
+                    </div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-amber-50 border-b-2 border-amber-200 text-xs md:text-sm font-bold text-blue-950">
+                        <span>${exm}</span>
+                        <span>Level: <span class="text-amber-800">${cls}</span></span>
+                        <span>Session: <span class="text-amber-800">${ses}</span></span>
+                        <span>Total Students: <span class="text-amber-800">${filtered.length}</span></span>
+                    </div>
+                    <div class="p-2">
+                        <table class="w-full table-auto border-collapse border border-blue-900 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                    </div>
+                </div>
+            `;
+            printArea.innerHTML = sheetHTML + `<div class="mt-3 no-print max-w-xl mx-auto"><button onclick="window.print()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 px-4 py-3 rounded-xl font-bold text-sm shadow-md w-full"><i class="fa-solid fa-print mr-1"></i> Print Tabulation Sheet</button></div>`;
+            printArea.classList.remove('hidden'); 
+        }
+
+        function searchResult() {
+            const id = document.getElementById('search-student-id').value.trim().toUpperCase();
+            const cls = document.getElementById('search-student-class').value;
+            const ses = document.getElementById('search-student-session').value;
+            const exm = document.getElementById('search-student-exam').value;
+            const printArea = document.getElementById('printable-area');
+
+            if (!id) { alert('Please enter Student ID!'); return; }
+
+            let student = excelStudents.find(s => s.id.toUpperCase() === id && s.class === cls && s.session === ses && s.exam === exm);
+            const regS = registeredStudents.find(r => r.id === id);
+
+            if (!student && regS) student = { id: regS.id, name: regS.name, class: regS.class, session: ses, exam: exm, marks: [] };
+            if (!student) {
+                alert('Transcript Not Found! Please verify ID, Level, and Session.'); return;
+            }
+
+            const studentFather = (regS && regS.father) ? regS.father : 'N/A';
+            const subjectCount = subjectConfig.length;
+            
+            const rowPadClass =
+                subjectCount <= 6  ? 'py-4 px-4 text-lg md:text-xl font-bold' :
+                subjectCount <= 8  ? 'py-3 px-3 text-base md:text-lg font-bold' :
+                subjectCount <= 10 ? 'py-2 px-3 text-sm md:text-base font-bold' :
+                subjectCount <= 13 ? 'py-1.5 px-2 text-xs md:text-sm font-bold' :
+                                     'py-1 px-1.5 text-[11px] md:text-xs font-bold';
+
+            let subjectRowsHTML = '';
+            subjectConfig.forEach((subObj, sIdx) => {
+                const mVal = (student.marks && student.marks[sIdx] !== undefined && String(student.marks[sIdx]).trim() !== '') ? student.marks[sIdx] : '-';
+                const gradeInfo = getSubjectGradeInfo(mVal, subObj.full);
+                const typeLabel = subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
+                
+                subjectRowsHTML += `
+                    <tr class="border-b border-blue-200 bg-transparent">
+                        <td class="${rowPadClass} border-r border-blue-200 text-blue-950">${subObj.name}${typeLabel}</td>
+                        <td class="${rowPadClass} text-center text-gray-700 w-24 border-r border-blue-200">${subObj.full}</td>
+                        <td class="${rowPadClass} text-center text-blue-950 w-28 border-r border-blue-200">${mVal}</td>
+                        <td class="${rowPadClass} text-center text-blue-900 w-20 border-r border-blue-200 font-montserrat">${gradeInfo.lg}</td>
+                        <td class="${rowPadClass} text-center text-blue-900 w-20 font-montserrat">${gradeInfo.gp}</td>
+                    </tr>
+                `;
+            });
+
+            const stats = calculateStudentResultStats(student.marks || []);
+            const currentDateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            const resultHTML = `
+                <div id="pdf-export-container" class="a4-print-wrapper mt-4">
+                    <div id="target-transcript-a4-node" class="islamic-a4-sheet font-serif-roman text-left bg-white">
+                        <div class="blue-inner-border">
+                            <img src="${universalLogo}" class="marksheet-large-watermark" alt="Watermark">
+
+                            <div class="relative z-10 w-full flex-grow flex flex-col justify-start">
+                                
+                                <!-- NEW HEADER (NO PHOTO, BLUE THEME) -->
+                                <div class="flex items-center justify-between border-b-2 border-blue-900 pb-3 mb-4">
+                                    <div class="w-1/5 text-left">
+                                        <img src="${universalLogo}" alt="Logo" class="w-20 h-20 object-contain p-1 border-2 border-blue-800 rounded-full shadow-sm">
+                                    </div>
+                                    <div class="w-3/5 text-center">
+                                        <h2 class="arabic-calligraphy text-2xl text-blue-900 mb-1">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
+                                        <h1 class="font-brand text-[22px] font-black text-blue-950 tracking-wide uppercase">${madrasahName}</h1>
+                                        <p class="text-[11px] text-blue-800 font-bold mt-1">Kaptai Rastar Matha, Mohara, Chandgaon, Chattogram</p>
+                                        <div class="mt-2 inline-block bg-blue-900 text-white px-5 py-1 rounded-full font-bold text-xs uppercase tracking-widest shadow">
+                                            ACADEMIC TRANSCRIPT - ${student.exam || 'ANNUAL EXAMINATION'}
+                                        </div>
+                                    </div>
+                                    <div class="w-1/5 text-right font-montserrat text-xs font-bold text-blue-950 space-y-1.5 pt-4">
+                                        <p>Session: <span class="text-red-700">${student.session || '2026'}</span></p>
+                                        <p>Date: <span class="text-red-700">${currentDateStr}</span></p>
+                                    </div>
+                                </div>
+
+                                <!-- STUDENT INFO (NO PHOTO) -->
+                                <div class="bg-blue-50/60 border border-blue-200 p-3 rounded-lg flex flex-col gap-2 mb-4">
+                                    <div class="grid grid-cols-2 gap-4 text-sm font-bold text-blue-950">
+                                        <div class="flex"><span class="w-32 text-gray-600">Student ID</span><span class="mr-2">:</span><span class="uppercase">${student.id}</span></div>
+                                        <div class="flex"><span class="w-32 text-gray-600">Class / Level</span><span class="mr-2">:</span><span class="uppercase">${student.class}</span></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 text-sm font-bold text-blue-950">
+                                        <div class="flex"><span class="w-32 text-gray-600">Student Name</span><span class="mr-2">:</span><span class="uppercase">${student.name}</span></div>
+                                        <div class="flex"><span class="w-32 text-gray-600">Father's Name</span><span class="mr-2">:</span><span class="uppercase">${studentFather}</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- MARKS TABLE -->
+                                <div class="mt-1">
+                                    <table class="w-full border-collapse border-2 border-blue-900 rounded-lg overflow-hidden">
+                                        <thead>
+                                            <tr class="bg-blue-900 text-white uppercase text-sm md:text-base font-montserrat">
+                                                <th class="py-2.5 px-3 text-left border-r border-blue-800">Course / Subject Title</th>
+                                                <th class="py-2.5 px-2 text-center w-24 border-r border-blue-800">Full Marks</th>
+                                                <th class="py-2.5 px-2 text-center w-28 border-r border-blue-800">Marks Obtained</th>
+                                                <th class="py-2.5 px-2 text-center w-20 border-r border-blue-800">Grade</th>
+                                                <th class="py-2.5 px-2 text-center w-20">GP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>${subjectRowsHTML}</tbody>
+                                    </table>
+                                </div>
+
+                                <!-- SUMMARY -->
+                                <div class="border-2 border-blue-800 p-3 rounded-xl shadow-sm flex justify-between items-center text-sm font-bold text-blue-950 mt-4 bg-white relative z-10">
+                                    <div class="text-center px-1">
+                                        <span class="text-gray-600 block text-[10px] uppercase font-montserrat">Total Marks</span>
+                                        <span class="text-2xl text-amber-700 font-black">${stats.total}</span>
+                                    </div>
+                                    <div class="text-center border-x-2 border-blue-200 px-4">
+                                        <span class="text-gray-600 block text-[10px] uppercase font-montserrat">GPA</span>
+                                        <span class="text-2xl text-blue-900 font-black">${stats.gpa}</span>
+                                    </div>
+                                    <div class="text-center border-r-2 border-blue-200 pr-4">
+                                        <span class="text-gray-600 block text-[10px] uppercase font-montserrat">Letter Grade</span>
+                                        <span class="text-2xl text-blue-900 font-black">${stats.grade}</span>
+                                    </div>
+                                    <div class="text-right px-1">
+                                        <span class="text-gray-600 block text-[10px] uppercase font-montserrat">Remarks</span>
+                                        <span class="text-lg text-blue-900 font-black">${stats.remarks}</span>
+                                    </div>
+                                </div>
+
+                                <!-- SIGNATURES -->
+                                <div class="pt-10 pb-1 flex justify-between text-xs text-gray-800 font-bold relative z-10 mt-auto">
+                                    <div class="text-center">
+                                        <div class="w-28 border-t-2 border-gray-600 mb-1"></div>
+                                        <span class="font-montserrat text-[11px]">Guardian Signature</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-28 border-t-2 border-gray-600 mb-1"></div>
+                                        <span class="font-montserrat text-[11px]">Class Teacher</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-32 border-t-2 border-blue-950 mb-1"></div>
+                                        <span class="text-blue-950 font-black font-montserrat text-[11px]">Principal / Controller</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            printArea.classList.remove('hidden');
+            printArea.innerHTML = resultHTML + `
+                <div class="mt-5 no-print max-w-xl mx-auto flex flex-wrap gap-3 justify-center">
+                    <button onclick="executeIsolatedTranscriptPrint()" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-6 rounded-xl text-sm shadow-md transition flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print Transcript</button>
+                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-bold py-3 px-6 rounded-xl text-sm shadow-md transition flex items-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                </div>
+            `;
+            printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function autoFitA4Marksheet(elementId) {
+            const sheet = document.getElementById(elementId);
+            if (!sheet) return 1;
+            sheet.style.transform = 'none'; sheet.style.height = 'auto'; 
+            await document.fonts.ready;
+            const images = sheet.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = img.onerror = resolve; });
+            }));
+            const actualHeight = sheet.scrollHeight; const targetHeight = 1123;
+            let scale = 1;
+            if (actualHeight > targetHeight) { scale = (targetHeight / actualHeight) * 0.985; }
+            sheet.style.height = (actualHeight > targetHeight ? actualHeight : targetHeight) + 'px';
+            sheet.style.transform = `scale(${scale})`;
+            return scale;
+        }
+
+        async function executeTranscriptPDFDownload(studentId, studentName) {
+            const container = document.getElementById('pdf-export-container');
+            const btn = event.target; const origText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Generating...';
+            window.scrollTo(0, 0);
+            try {
+                await autoFitA4Marksheet('target-transcript-a4-node');
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                const opt = {
+                    margin: 0, filename: `Transcript_${studentId}_${studentName.replace(/\s+/g, '_')}.pdf`,
+                    image: { type: 'jpeg', quality: 1.0 },
+                    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 794, windowHeight: 1123, scrollY: 0, scrollX: 0 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                await html2pdf().set(opt).from(container).save();
+            } finally { btn.innerHTML = origText; }
+        }
+
+        async function executeIsolatedTranscriptPrint() {
+            const container = document.getElementById('pdf-export-container');
+            await autoFitA4Marksheet('target-transcript-a4-node');
+            const printFrame = document.getElementById('isolated-print-frame');
+            const frameDoc = printFrame.contentWindow.document;
+            const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+            frameDoc.open();
+            frameDoc.write(`
+                <!DOCTYPE html><html><head><title>Print Transcript</title>
+                <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Amiri:wght@700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                ${styles}
+                <style>
+                    @page { size: A4 portrait; margin: 10mm; }
+                    html, body { width: 190mm; height: 277mm; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+                    .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.9); transform-origin: center center; }
+                    .a4-print-wrapper { box-shadow: none !important; margin: 0 auto !important; }
+                    html, body, .print-safe-wrap, .print-safe-wrap * { visibility: visible !important; }
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+                </style>
+                </head><body><div class="print-safe-wrap">${container.outerHTML}</div></body></html>
+            `);
+            frameDoc.close();
+            setTimeout(() => { printFrame.contentWindow.focus(); printFrame.contentWindow.print(); }, 1000);
+        }
+
+        // SETTINGS
+        function saveSettings() {
+            const name = document.getElementById('set-madrasah-name').value;
+            db.ref('m3_settings/name').set(name); localStorage.setItem('m3_name', name);
+            const fileInput = document.getElementById('universal-logo-file');
+            if (fileInput.files && fileInput.files[0]) {
+                compressImage(fileInput.files[0], 250, 250).then(b64 => {
+                    db.ref('m3_settings/logo').set(b64); localStorage.setItem('m3_logo', b64);
+                    alert('Settings & Logo Saved!'); applyAdminUniversalLogo();
+                });
+            } else { alert('Madrasah Name Saved!'); }
+        }
+        function changeAdminPassword() {
+            const newPass = document.getElementById('new-admin-pass').value.trim();
+            if(newPass) { localStorage.setItem('m3_pass', newPass); alert('Password Updated!'); }
+        }
+        function clearAllSystemStorageWithPassword() {
+            const pass = prompt('Enter Admin Password to WIPE ALL CLOUD DATA:');
+            if (pass === (localStorage.getItem('m3_pass') || '1234')) {
+                db.ref('m3_students').remove(); db.ref('m3_results').remove();
+                registeredStudents = []; excelStudents = [];
+                localStorage.removeItem('m3_db'); localStorage.removeItem('m3_results');
+                renderStudentDBTable(); renderExcelTable(); alert('All data wiped!');
+            }
+        }
+
+        window.onload = function() {
+            // Keep on login screen initially
+        };
+    </script>
+</body>
+</html>
