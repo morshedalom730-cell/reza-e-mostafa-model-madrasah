@@ -58,7 +58,7 @@
             body * { visibility: hidden !important; }
             #printable-area, #printable-area * { visibility: visible !important; }
             #printable-area { display: flex !important; justify-content: center; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
-            /* This utterly destroys the browser URL and Date headers */
+            /* Removes browser URL and Date headers completely */
             @page { size: A4 portrait; margin: 0mm !important; } 
             .no-print { display: none !important; }
         }
@@ -108,11 +108,16 @@
                         <div>
                             <label class="block font-bold mb-1 text-slate-600">Class / Level *</label>
                             <select id="reg-class" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-slate-50 font-bold text-slate-800 cursor-pointer outline-none">
-                                <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="Class One">Class One</option>
+                                <option value="Class Two">Class Two</option>
+                                <option value="Class Three">Class Three</option>
+                                <option value="Class Four">Class Four</option>
+                                <option value="Class Five">Class Five</option>
+                                <option value="Class Six">Class Six</option>
+                                <option value="Class Seven">Class Seven</option>
+                                <option value="Class Eight">Class Eight</option>
+                                <option value="Class Nine">Class Nine</option>
                                 <option value="Class Ten">Class Ten</option>
                             </select>
                         </div>
@@ -135,11 +140,16 @@
                         <input type="text" id="student-db-search" onkeyup="renderStudentDBTable()" placeholder="Search by ID or Name..." class="p-2.5 border border-slate-300 rounded-xl w-full max-w-sm text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-slate-400">
                         <select id="student-db-search-class" onchange="renderStudentDBTable()" class="p-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 bg-slate-50 outline-none">
                             <option value="ALL" selected>All Classes</option>
-                            <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
-                            <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
-                            <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
-                            <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
-                            <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="Class One">Class One</option>
+                            <option value="Class Two">Class Two</option>
+                            <option value="Class Three">Class Three</option>
+                            <option value="Class Four">Class Four</option>
+                            <option value="Class Five">Class Five</option>
+                            <option value="Class Six">Class Six</option>
+                            <option value="Class Seven">Class Seven</option>
+                            <option value="Class Eight">Class Eight</option>
+                            <option value="Class Nine">Class Nine</option>
                             <option value="Class Ten">Class Ten</option>
                         </select>
                     </div>
@@ -173,11 +183,16 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Select Class:</label>
                             <select id="admin-global-class" onchange="renderExcelTable()" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold bg-white text-slate-900 outline-none">
-                                <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="Class One">Class One</option>
+                                <option value="Class Two">Class Two</option>
+                                <option value="Class Three">Class Three</option>
+                                <option value="Class Four">Class Four</option>
+                                <option value="Class Five">Class Five</option>
+                                <option value="Class Six">Class Six</option>
+                                <option value="Class Seven">Class Seven</option>
+                                <option value="Class Eight">Class Eight</option>
+                                <option value="Class Nine">Class Nine</option>
                                 <option value="Class Ten">Class Ten</option>
                             </select>
                         </div>
