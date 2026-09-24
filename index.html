@@ -16,7 +16,6 @@
         body { font-family: 'Anek Bangla', sans-serif; background-color: #f0f4f8; }
         .font-brand { font-family: 'Cinzel', serif; }
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
-        .font-serif-roman { font-family: "Times New Roman", Times, serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
         
         /* PREMIUM A4 MARKSHEET SYSTEM */
@@ -26,40 +25,29 @@
         }
         .islamic-a4-sheet {
             width: 794px; min-height: 1123px; background: #ffffff;
-            border: 12px solid #0f172a; /* Deep Navy Blue Outer */
+            border: 12px solid #0f172a; 
             padding: 6px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
         }
         .blue-inner-border {
-            border: 2px solid #d97706; /* Golden Inner */
-            outline: 1px solid #d97706; outline-offset: 3px;
-            width: 100%; height: 100%; flex-grow: 1;
-            padding: 30px; box-sizing: border-box; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative; background: #fdfdfd;
+            border: 2px solid #d97706; outline: 1px solid #d97706; outline-offset: 3px;
+            width: 100%; height: 100%; flex-grow: 1; padding: 30px; box-sizing: border-box; 
+            display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
         }
         .marksheet-large-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 480px; height: 480px; opacity: 0.05; pointer-events: none; z-index: 1; object-fit: contain;
-            filter: grayscale(100%);
+            width: 480px; height: 480px; opacity: 0.05; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
         }
 
         .student-info-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-            background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 15px; border-radius: 8px;
-            position: relative; z-index: 10;
+            background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 15px; border-radius: 8px; position: relative; z-index: 10;
         }
         .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 13px; color: #0f172a; }
         .info-item span.label { font-weight: 700; width: 120px; color: #475569; }
         .info-item span.value { font-weight: 800; text-transform: uppercase; }
 
         @media print {
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
-            body * { visibility: hidden !important; }
-            #printable-area, #printable-area * { visibility: visible !important; }
-            #printable-area { display: flex !important; justify-content: center; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
-            /* Removes browser URL and Date headers completely */
-            @page { size: A4 portrait; margin: 0mm !important; } 
             .no-print { display: none !important; }
         }
     </style>
@@ -85,7 +73,8 @@
                 <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
                     <button onclick="switchTab('students')" id="tab-students" class="text-amber-400 border-b-2 border-amber-400 pb-1">Students</button>
                     <button onclick="switchTab('marks')" id="tab-marks" class="hover:text-amber-400 pb-1 text-slate-300">Marks Entry</button>
-                    <button onclick="switchTab('print')" id="tab-print" class="hover:text-amber-400 pb-1 text-slate-300">Print Results</button>
+                    <button onclick="switchTab('attendance')" id="tab-attendance" class="hover:text-amber-400 pb-1 text-slate-300">Attendance</button>
+                    <button onclick="switchTab('print')" id="tab-print" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
                     <button onclick="switchTab('settings')" id="tab-settings" class="hover:text-amber-400 pb-1 text-slate-300"><i class="fa-solid fa-gear"></i></button>
                 </div>
             </div>
@@ -108,16 +97,11 @@
                         <div>
                             <label class="block font-bold mb-1 text-slate-600">Class / Level *</label>
                             <select id="reg-class" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-slate-50 font-bold text-slate-800 cursor-pointer outline-none">
-                                <option value="Nursery">Nursery</option>
-                                <option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option>
-                                <option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option>
-                                <option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option>
-                                <option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option>
-                                <option value="Class Nine">Class Nine</option>
+                                <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
+                                <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
+                                <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
+                                <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
+                                <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
                                 <option value="Class Ten">Class Ten</option>
                             </select>
                         </div>
@@ -140,16 +124,11 @@
                         <input type="text" id="student-db-search" onkeyup="renderStudentDBTable()" placeholder="Search by ID or Name..." class="p-2.5 border border-slate-300 rounded-xl w-full max-w-sm text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-slate-400">
                         <select id="student-db-search-class" onchange="renderStudentDBTable()" class="p-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 bg-slate-50 outline-none">
                             <option value="ALL" selected>All Classes</option>
-                            <option value="Nursery">Nursery</option>
-                            <option value="Class One">Class One</option>
-                            <option value="Class Two">Class Two</option>
-                            <option value="Class Three">Class Three</option>
-                            <option value="Class Four">Class Four</option>
-                            <option value="Class Five">Class Five</option>
-                            <option value="Class Six">Class Six</option>
-                            <option value="Class Seven">Class Seven</option>
-                            <option value="Class Eight">Class Eight</option>
-                            <option value="Class Nine">Class Nine</option>
+                            <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
+                            <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
+                            <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
+                            <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
+                            <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
                             <option value="Class Ten">Class Ten</option>
                         </select>
                     </div>
@@ -157,9 +136,11 @@
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="bg-slate-800 text-white">
-                                    <th class="p-3 border border-slate-700">ID</th><th class="p-3 border border-slate-700">Name</th><th class="p-3 border border-slate-700">Father's Name</th>
-                                    <th class="p-3 border border-slate-700">Class</th><th class="p-3 border border-slate-700">Mobile</th>
-                                    <th class="p-3 border border-slate-700">Status</th><th class="p-3 border border-slate-700 text-center">Action</th>
+                                    <th class="p-3 border border-slate-700 text-center">SL</th>
+                                    <th class="p-3 border border-slate-700">ID</th><th class="p-3 border border-slate-700">Name</th>
+                                    <th class="p-3 border border-slate-700">Father's Name</th><th class="p-3 border border-slate-700">Class</th>
+                                    <th class="p-3 border border-slate-700">Mobile</th><th class="p-3 border border-slate-700">Status</th>
+                                    <th class="p-3 border border-slate-700 text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="student-db-table-body" class="bg-white"></tbody>
@@ -183,16 +164,11 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Select Class:</label>
                             <select id="admin-global-class" onchange="renderExcelTable()" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold bg-white text-slate-900 outline-none">
-                                <option value="Nursery">Nursery</option>
-                                <option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option>
-                                <option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option>
-                                <option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option>
-                                <option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option>
-                                <option value="Class Nine">Class Nine</option>
+                                <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
+                                <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
+                                <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
+                                <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
+                                <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
                                 <option value="Class Ten">Class Ten</option>
                             </select>
                         </div>
@@ -216,13 +192,39 @@
                     </div>
 
                     <div class="overflow-x-auto border border-slate-300 rounded-xl mb-4 shadow-sm">
-                        <!-- Made table more compact for 10+ subjects -->
                         <table class="w-full text-left border-collapse text-[10px] md:text-[11px]">
                             <thead><tr id="excel-header-row" class="bg-slate-800 text-white"></tr></thead>
                             <tbody id="excel-table-body" class="bg-white"></tbody>
                         </table>
                     </div>
                     <button onclick="saveExcelData()" class="bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg w-full md:w-auto transition"><i class="fa-solid fa-floppy-disk mr-2"></i> Save Results to Cloud</button>
+                </div>
+            </div>
+
+            <!-- TAB: ATTENDANCE (NEW) -->
+            <div id="sec-attendance" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-5">
+                        <h3 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-clipboard-user text-amber-500 mr-2"></i>Monthly Attendance Sheet</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Select Class *</label>
+                            <select id="attendance-class" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                                <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
+                                <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
+                                <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
+                                <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
+                                <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
+                                <option value="Class Ten">Class Ten</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Month Name *</label>
+                            <input type="text" id="attendance-month" placeholder="e.g. January 2026" class="p-3 border border-slate-300 rounded-xl w-full font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-400">
+                        </div>
+                    </div>
+                    <button onclick="generateAttendanceSheet()" class="w-full max-w-md mx-auto block bg-slate-800 text-amber-400 py-3.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-900 transition tracking-wide">Generate Attendance Register</button>
                 </div>
             </div>
 
@@ -350,11 +352,12 @@
                 </div>
             </div>
 
+            <!-- COMMON PRINT AREA FOR EVERY SHEET -->
             <div id="printable-area" class="mt-4 hidden no-print"></div>
         </div>
     </div>
 
-    <!-- Hidden iframe for Print Isolation -->
+    <!-- Hidden iframe for Universal Print Isolation -->
     <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
 
     <script>
@@ -393,7 +396,7 @@
         };
 
         function switchTab(tabId) {
-            ['students','marks','print','settings'].forEach(t => {
+            ['students','marks','attendance','print','settings'].forEach(t => {
                 document.getElementById(`sec-${t}`).classList.add('hidden');
                 document.getElementById(`tab-${t}`).classList.remove('text-amber-400', 'border-b-2', 'border-amber-400');
                 document.getElementById(`tab-${t}`).classList.add('text-slate-300');
@@ -417,13 +420,7 @@
 
         function applyAdminUniversalLogo() {
             document.querySelectorAll('.universal-logo-target').forEach(img => img.src = universalLogo);
-            const favicon = document.getElementById('dynamic-favicon');
-            if (favicon) favicon.href = universalLogo;
         }
-
-        db.ref('m3_settings/logo').once('value').then(snap => {
-            if (snap.exists()) { universalLogo = snap.val(); applyAdminUniversalLogo(); }
-        }).catch(() => {});
 
         function autoMigrateData(dataArray, dbRefPath, storageKey) {
             let migrated = false;
@@ -526,12 +523,13 @@
             if(cSearch !== 'ALL') filtered = filtered.filter(s => s.class === cSearch);
             if(q) filtered = filtered.filter(s => s.id.includes(q) || s.name.includes(q) || s.phone.includes(q));
 
-            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">No students found.</td></tr>`; return; }
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500 font-bold">No students found.</td></tr>`; return; }
 
-            filtered.forEach((s) => {
+            filtered.forEach((s, idx) => {
                 const statusBadge = s.status === 'Deactivated' ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold text-[10px]">Inactive</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-[10px]">Active</span>';
                 tbody.innerHTML += `
                     <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="p-3 text-center font-bold text-slate-500">${idx + 1}</td>
                         <td class="p-3 font-bold text-slate-800">${s.id}</td><td class="p-3 font-bold">${s.name}</td>
                         <td class="p-3 text-slate-600">${s.father}</td><td class="p-3 font-bold text-slate-700">${s.class}</td>
                         <td class="p-3 font-medium">${s.phone}</td><td class="p-3">${statusBadge}</td>
@@ -624,9 +622,12 @@
             const tbody = document.getElementById('excel-table-body');
             if(!headerRow || !tbody) return;
             const currentStudents = excelStudents.filter(s => s.class === cls);
+            
+            // Sort by ID naturally
+            currentStudents.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
 
             // Tighter Column Widths
-            let headerHTML = `<th class="p-1 border border-slate-700 w-12 text-center">ID</th><th class="p-1 border border-slate-700 w-24">Name</th>`;
+            let headerHTML = `<th class="p-1 border border-slate-700 w-6 text-center">SL</th><th class="p-1 border border-slate-700 w-12 text-center">ID</th><th class="p-1 border border-slate-700 w-24">Name</th>`;
             subjectConfig.forEach((subObj, sIdx) => {
                 headerHTML += `<th class="p-1 border border-slate-700 bg-slate-700 min-w-[70px] max-w-[90px] text-center">
                     <div class="space-y-1">
@@ -640,12 +641,12 @@
             headerHTML += `<th class="p-1 border border-slate-700 bg-amber-600 text-slate-900 font-black w-10 text-center">Total</th><th class="p-1 border border-slate-700 bg-amber-600 text-slate-900 font-black w-10 text-center">GPA</th><th class="p-1 border border-slate-700 text-center w-8 bg-red-800">Del</th>`;
             headerRow.innerHTML = headerHTML; tbody.innerHTML = '';
 
-            if (currentStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="${4 + subjectConfig.length}" class="p-4 text-center font-bold text-slate-500">No students found in ${cls}. Sync first.</td></tr>`; return; }
+            if (currentStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="${5 + subjectConfig.length}" class="p-4 text-center font-bold text-slate-500">No students found in ${cls}. Sync first.</td></tr>`; return; }
 
-            currentStudents.forEach((s) => {
+            currentStudents.forEach((s, idx) => {
                 const realIndex = excelStudents.indexOf(s);
                 const stats = calculateStudentResultStats(s.marks || []);
-                let rowHTML = `<tr class="border-b border-slate-300 hover:bg-slate-100"><td class="p-0 border border-slate-300"><input type="text" value="${s.id}" readonly class="ex-id w-full p-1 font-bold text-center bg-transparent uppercase text-slate-800"></td><td class="p-0 border border-slate-300"><input type="text" value="${s.name}" readonly class="ex-name w-full p-1 font-bold bg-transparent uppercase"></td>`;
+                let rowHTML = `<tr class="border-b border-slate-300 hover:bg-slate-100"><td class="p-0 border border-slate-300 text-center font-bold text-slate-500">${idx+1}</td><td class="p-0 border border-slate-300"><input type="text" value="${s.id}" readonly class="ex-id w-full p-1 font-bold text-center bg-transparent uppercase text-slate-800"></td><td class="p-0 border border-slate-300"><input type="text" value="${s.name}" readonly class="ex-name w-full p-1 font-bold bg-transparent uppercase"></td>`;
                 subjectConfig.forEach((_, sIdx) => {
                     const markVal = (s.marks && s.marks[sIdx] !== undefined) ? s.marks[sIdx] : '';
                     rowHTML += `<td class="p-0 border border-slate-300"><input type="text" value="${markVal}" class="ex-mark sub-mark-${sIdx} w-full p-1.5 text-center font-bold text-slate-900 bg-transparent focus:bg-amber-50 focus:outline-none"></td>`;
@@ -695,6 +696,85 @@
             renderExcelTable(); if(showAlert) alert('Saved to Cloud!');
         }
 
+        // ==========================================
+        // ATTENDANCE SHEET GENERATION (NEW MODULE)
+        // ==========================================
+        function generateAttendanceSheet() {
+            const cls = document.getElementById('attendance-class').value;
+            const month = document.getElementById('attendance-month').value.trim();
+            const printArea = document.getElementById('printable-area');
+
+            if(!cls || !month) { alert('Please enter Month Name and select Class!'); return; }
+
+            let filtered = registeredStudents.filter(s => s.class === cls);
+            if(filtered.length === 0) { alert('No students found in this class!'); return; }
+
+            // Sort logically by ID
+            filtered.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
+
+            let daysHtml = '';
+            for(let i=1; i<=31; i++) {
+                daysHtml += `<th class="border border-slate-600 p-1 text-center w-[20px] bg-slate-100">${i}</th>`;
+            }
+
+            let rowsHtml = '';
+            filtered.forEach((s, idx) => {
+                let emptyCells = '';
+                for(let i=1; i<=31; i++) {
+                    emptyCells += `<td class="border border-slate-400 p-1 text-center"></td>`;
+                }
+                rowsHtml += `
+                    <tr class="text-[9px] md:text-[10px] text-slate-900 h-6">
+                        <td class="border border-slate-400 p-1 text-center font-bold">${idx+1}</td>
+                        <td class="border border-slate-400 p-1 text-center font-bold">${s.id}</td>
+                        <td class="border border-slate-400 p-1 font-bold whitespace-nowrap overflow-hidden">${s.name}</td>
+                        <td class="border border-slate-400 p-1 whitespace-nowrap overflow-hidden">${s.father}</td>
+                        ${emptyCells}
+                    </tr>
+                `;
+            });
+
+            const sheetHTML = `
+                <div id="target-attendance-a4-node" class="bg-white p-6 border-[8px] border-slate-800 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start relative">
+                    <!-- HEADER -->
+                    <div class="flex items-center justify-between border-b-2 border-slate-800 pb-3 mb-4">
+                        <img src="${universalLogo}" class="w-16 h-16 object-contain">
+                        <div class="text-center flex-grow">
+                            <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest">${madrasahName}</h1>
+                            <h2 class="text-base font-bold text-amber-700 mt-1 uppercase tracking-wide">Monthly Student Attendance Register</h2>
+                        </div>
+                        <div class="text-right text-sm font-bold text-slate-800 space-y-1">
+                            <p>Class: <span class="text-amber-700 uppercase">${cls}</span></p>
+                            <p>Month: <span class="text-amber-700 border-b border-dashed border-slate-500 pb-0.5">${month}</span></p>
+                        </div>
+                    </div>
+                    <!-- TABLE -->
+                    <table class="w-full border-collapse border-2 border-slate-800">
+                        <thead>
+                            <tr class="bg-slate-800 text-[10px] text-white uppercase tracking-wide">
+                                <th class="border border-slate-600 p-1 w-6 text-center">SL</th>
+                                <th class="border border-slate-600 p-1 w-14 text-center">ID</th>
+                                <th class="border border-slate-600 p-1 text-left w-36">Student Name</th>
+                                <th class="border border-slate-600 p-1 text-left w-36">Father's Name</th>
+                                ${daysHtml}
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                    
+                    <div class="mt-auto pt-8 pb-2 flex justify-between text-xs font-bold text-slate-800">
+                        <div class="text-center"><div class="w-40 border-t-2 border-slate-600 mb-1"></div><span>Class Teacher Signature</span></div>
+                        <div class="text-center"><div class="w-40 border-t-2 border-slate-600 mb-1"></div><span>Principal Signature</span></div>
+                    </div>
+                </div>
+            `;
+
+            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="executeIsolatedPrint('target-attendance-a4-node', 'landscape')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-8 rounded-xl w-full shadow-lg transition"><i class="fa-solid fa-print mr-2"></i> Print Attendance Sheet</button></div>`;
+            printArea.classList.remove('hidden');
+            printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
         // PRINT RESULTS
         function toggleResultTab(tab) {
             if(tab === 'personal') {
@@ -718,6 +798,9 @@
             const filtered = excelStudents.filter(s => s.class === cls && s.session === ses && s.exam === exm);
             if(filtered.length === 0) { alert('No results found for this selection.'); return; }
 
+            // SORT Tabulation
+            filtered.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
+
             let thHTML = `
                 <tr class="bg-slate-900 text-white uppercase text-[9px] md:text-[10px]">
                     <th class="p-1 border border-slate-700 text-center w-8">SL</th>
@@ -738,7 +821,7 @@
             });
 
             const sheetHTML = `
-                <div class="bg-white rounded-2xl border-[3px] border-slate-800 shadow-xl overflow-hidden font-serif-roman mt-4">
+                <div id="target-tabulation-a4-node" class="bg-white rounded-xl border-4 border-slate-800 overflow-hidden font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
                     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
                         <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-xl border-2 border-amber-400 shadow-md shrink-0">
                         <div class="text-center flex-grow">
@@ -752,12 +835,12 @@
                         <span>Session: <span class="text-amber-700">${ses}</span></span>
                         <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
                     </div>
-                    <div class="p-2">
+                    <div class="p-2 flex-grow">
                         <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
                     </div>
                 </div>
             `;
-            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-amber-400 px-4 py-3.5 rounded-xl font-bold text-sm shadow-lg w-full transition"><i class="fa-solid fa-print mr-2"></i> Print Tabulation Sheet</button></div>`;
+            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="executeIsolatedPrint('target-tabulation-a4-node', 'landscape')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 px-4 py-3.5 rounded-xl font-bold text-sm shadow-lg w-full transition"><i class="fa-solid fa-print mr-2"></i> Print Tabulation Sheet</button></div>`;
             printArea.classList.remove('hidden'); 
         }
 
@@ -916,29 +999,11 @@
             printArea.classList.remove('hidden');
             printArea.innerHTML = resultHTML + `
                 <div class="mt-6 no-print max-w-xl mx-auto flex flex-wrap gap-4 justify-center">
-                    <button onclick="executeIsolatedTranscriptPrint()" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
+                    <button onclick="executeIsolatedPrint('target-transcript-a4-node', 'portrait')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
                     <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
                 </div>
             `;
             printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        async function autoFitA4Marksheet(elementId) {
-            const sheet = document.getElementById(elementId);
-            if (!sheet) return 1;
-            sheet.style.transform = 'none'; sheet.style.height = 'auto'; 
-            await document.fonts.ready;
-            const images = sheet.querySelectorAll('img');
-            await Promise.all(Array.from(images).map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => { img.onload = img.onerror = resolve; });
-            }));
-            const actualHeight = sheet.scrollHeight; const targetHeight = 1123;
-            let scale = 1;
-            if (actualHeight > targetHeight) { scale = (targetHeight / actualHeight) * 0.98; }
-            sheet.style.height = (actualHeight > targetHeight ? actualHeight : targetHeight) + 'px';
-            sheet.style.transform = `scale(${scale})`;
-            return scale;
         }
 
         async function executeTranscriptPDFDownload(studentId, studentName) {
@@ -947,10 +1012,10 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating...';
             window.scrollTo(0, 0);
             try {
-                await autoFitA4Marksheet('target-transcript-a4-node');
+                const sheet = document.getElementById('target-transcript-a4-node');
+                sheet.style.transform = 'none'; sheet.style.height = '1123px';
                 await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
                 
-                // CRITICAL PDF EXACT FIX
                 const opt = {
                     margin: 0, 
                     filename: `Transcript_${studentId}_${studentName.replace(/\s+/g, '_')}.pdf`,
@@ -962,29 +1027,42 @@
             } finally { btn.innerHTML = origText; }
         }
 
-        // PRINT FUNCTION FIX FOR BLANK PAGE & MARGINS
-        async function executeIsolatedTranscriptPrint() {
-            const container = document.getElementById('pdf-export-container');
-            await autoFitA4Marksheet('target-transcript-a4-node');
+        // UNIVERSAL PRINT FUNCTION FIX FOR BLANK PAGE & MARGINS (Landscape and Portrait Support)
+        async function executeIsolatedPrint(targetNodeId, orientation) {
+            const targetElement = document.getElementById(targetNodeId);
+            if(!targetElement) return;
+
+            // Normalize node for printing based on format
+            if(orientation === 'portrait') {
+                targetElement.style.transform = 'none'; 
+                targetElement.style.height = '1123px';
+            } else {
+                targetElement.style.transform = 'none'; 
+                targetElement.style.width = '1123px'; 
+                targetElement.style.height = '794px';
+            }
+
             const printFrame = document.getElementById('isolated-print-frame');
             const frameDoc = printFrame.contentWindow.document;
             const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
             
+            const pageCss = orientation === 'portrait' ? 
+                `@page { size: A4 portrait; margin: 0mm !important; } .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.96); transform-origin: top center; margin-top: 5mm; }` :
+                `@page { size: A4 landscape; margin: 0mm !important; } .print-safe-wrap { width: 1123px; height: 794px; transform: scale(0.96); transform-origin: top center; margin-top: 5mm; }`;
+
             frameDoc.open();
             frameDoc.write(`
-                <!DOCTYPE html><html><head><title>Print Transcript</title>
+                <!DOCTYPE html><html><head><title>Print Document</title>
                 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Amiri:wght@700&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+                <script src="https://cdn.tailwindcss.com"><\/script>
                 ${styles}
                 <style>
-                    /* Utterly destroys browser headers/footers */
-                    @page { size: A4 portrait; margin: 0mm !important; }
+                    ${pageCss}
                     html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
-                    .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.96); transform-origin: top center; margin-top: 10mm; }
-                    .a4-print-wrapper { box-shadow: none !important; margin: 0 auto !important; }
                     .no-print { display: none !important; }
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
                 </style>
-                </head><body><div class="print-safe-wrap">${container.outerHTML}</div></body></html>
+                </head><body><div class="print-safe-wrap">${targetElement.outerHTML}</div></body></html>
             `);
             frameDoc.close();
             
