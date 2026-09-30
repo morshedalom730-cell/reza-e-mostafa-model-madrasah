@@ -18,25 +18,26 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
         
-        /* PREMIUM A4 MARKSHEET SYSTEM */
+        /* PREMIUM A4 MARKSHEET SYSTEM (BORDER FIXED) */
         .a4-print-wrapper {
             width: 794px; height: 1123px; background-color: #ffffff; margin: 0 auto;
             position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
         .islamic-a4-sheet {
-            width: 794px; min-height: 1123px; background: #ffffff;
-            border: 12px solid #0f172a; 
-            padding: 6px; box-sizing: border-box;
+            width: 100%; height: 100%; background: #ffffff;
+            border: 14px solid #1e3a8a; /* Deep Royal Blue Outer */
+            padding: 8px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
         }
         .blue-inner-border {
-            border: 2px solid #d97706; outline: 1px solid #d97706; outline-offset: 3px;
-            width: 100%; height: 100%; flex-grow: 1; padding: 30px; box-sizing: border-box; 
+            border: 3px double #d97706; /* Golden Double Inner */
+            border-radius: 8px;
+            width: 100%; height: 100%; flex-grow: 1; padding: 25px 30px; box-sizing: border-box; 
             display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
         }
         .marksheet-large-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 480px; height: 480px; opacity: 0.05; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
+            width: 480px; height: 480px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
         }
 
         .student-info-grid {
@@ -52,8 +53,7 @@
             body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
             body * { visibility: hidden !important; }
             #printable-area, #printable-area * { visibility: visible !important; }
-            #printable-area { display: flex !important; justify-content: center; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
-            @page { size: A4 portrait; margin: 0mm !important; } 
+            #printable-area { display: flex !important; justify-content: center; align-items: flex-start; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -62,7 +62,7 @@
 
     <div class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print border-b-2 border-amber-500">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3.5">
-            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA SM. MODEL MADRASA</h1>
+            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA D. MODEL MADRASA</h1>
             <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
                 <button onclick="showPage('home')" class="hover:text-amber-400 pb-1 text-slate-300">Home</button>
                 <button onclick="showPage('result')" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
@@ -206,9 +206,6 @@
         </div>
     </main>
 
-    <!-- Hidden iframe for Universal Print Isolation -->
-    <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
-
     <script>
         // Firebase Configuration 
         const firebaseConfig = {
@@ -228,10 +225,8 @@
         let resultPublishStatus = 'PUBLISHED'; let resultPublishDatetime = '';
         
         let subjectConfig = [
-            { name: 'Al Quran', full: 100, type: 'Main' },
-            { name: 'Arabic', full: 100, type: 'Main' },
-            { name: 'Bangla', full: 100, type: 'Main' },
-            { name: 'English', full: 100, type: 'Main' },
+            { name: 'Al Quran', full: 100, type: 'Main' }, { name: 'Arabic', full: 100, type: 'Main' },
+            { name: 'Bangla', full: 100, type: 'Main' }, { name: 'English', full: 100, type: 'Main' },
             { name: 'Mathematics', full: 100, type: 'Main' }
         ];
 
@@ -393,7 +388,6 @@
 
             const studentFather = (regS && regS.father) ? regS.father : 'N/A';
             
-            // Filter out blank subjects
             let validSubjects = [];
             currentConfig.forEach((subObj, sIdx) => {
                 const markVal = (student.marks && student.marks[sIdx] !== undefined) ? String(student.marks[sIdx]).trim() : '';
@@ -412,17 +406,17 @@
 
             let subjectRowsHTML = '';
             if (subjectCount === 0) {
-                subjectRowsHTML = `<tr><td colspan="5" class="py-6 text-center font-bold text-gray-500">No subject marks recorded.</td></tr>`;
+                subjectRowsHTML = `<tr><td colspan="5" class="py-6 text-center font-bold text-slate-500">No subject marks recorded.</td></tr>`;
             } else {
                 validSubjects.forEach(item => {
                     const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
                     const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
                     subjectRowsHTML += `
-                        <tr class="border-b border-gray-300 bg-transparent hover:bg-slate-50">
-                            <td class="${rowPadClass} border-r border-gray-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
-                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-gray-300">${item.subObj.full}</td>
-                            <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-gray-300">${item.mark}</td>
-                            <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-gray-300 font-montserrat">${gradeInfo.lg}</td>
+                        <tr class="border-b border-slate-300 bg-transparent hover:bg-slate-50">
+                            <td class="${rowPadClass} border-r border-slate-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
+                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-slate-300">${item.subObj.full}</td>
+                            <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-slate-300">${item.mark}</td>
+                            <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-slate-300 font-montserrat">${gradeInfo.lg}</td>
                             <td class="${rowPadClass} text-center text-slate-900 w-20 font-montserrat">${gradeInfo.gp}</td>
                         </tr>
                     `;
@@ -430,7 +424,6 @@
             }
 
             const stats = calculateStudentResultStats(student.marks || [], currentConfig);
-            const currentDateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
             const resultHTML = `
                 <div id="pdf-export-container" class="a4-print-wrapper mt-4">
@@ -518,7 +511,7 @@
                                 </div>
 
                                 <!-- PREMIUM SIGNATURES (Only 2 sides) -->
-                                <div class="pt-12 pb-2 flex justify-between items-end text-xs text-slate-900 font-bold relative z-10 mt-auto px-8">
+                                <div class="pt-16 pb-2 flex justify-between items-end text-xs text-slate-900 font-bold relative z-10 mt-auto px-8">
                                     <div class="text-center">
                                         <div class="w-40 border-t-[2px] border-slate-800 mb-1.5"></div>
                                         <span class="font-montserrat text-[12px] uppercase tracking-wide">Guardian Signature</span>
@@ -536,9 +529,9 @@
 
             printArea.classList.remove('hidden');
             printArea.innerHTML = resultHTML + `
-                <div class="mt-6 no-print max-w-xl mx-auto flex flex-wrap gap-4 justify-center">
-                    <button onclick="executeIsolatedPrint('target-transcript-a4-node', 'portrait')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
-                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
+                <div class="mt-4 no-print max-w-xl mx-auto flex flex-wrap gap-3 justify-center">
+                    <button onclick="executeDirectPrint('target-transcript-a4-node', 'portrait')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
+                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-600 hover:bg-amber-700 text-slate-950 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
                 </div>
             `;
             printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -552,9 +545,21 @@
             const printArea = document.getElementById('printable-area');
 
             if(!cls) { alert('Select Class!'); return; }
+            
+            if(!isResultAccessible()) {
+                const timeText = resultPublishDatetime ? `<br><span class="text-xs font-normal">Official Release Schedule: ${new Date(resultPublishDatetime).toLocaleString('en-US')}</span>` : '';
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<div class="bg-amber-100 p-6 rounded-2xl border-2 border-amber-300 text-amber-950 text-center font-bold text-sm shadow-xl max-w-xl mx-auto my-4"><i class="fa-solid fa-clock text-amber-600 text-3xl mb-2 block"></i>Official Results for this examination have not been published yet.${timeText}</div>`;
+                return;
+            }
 
             const filtered = excelStudents.filter(s => s.class === cls && s.session === ses && s.exam === exm);
-            if(filtered.length === 0) { alert('No results found for this selection.'); return; }
+            if(filtered.length === 0) { 
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<p class="text-red-600 text-center font-bold text-sm py-6 bg-red-50 rounded-xl border border-red-200 mt-4 max-w-xl mx-auto">No results found for this selection.</p>`; 
+                return; 
+            }
+
             filtered.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
 
             let currentConfig = classSubjectConfig[cls] || subjectConfig;
@@ -579,26 +584,35 @@
             });
 
             const sheetHTML = `
-                <div id="target-tabulation-a4-node" class="bg-white rounded-xl border-[4px] border-slate-900 shadow-lg overflow-hidden font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
-                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
-                        <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-400 shadow-md shrink-0">
-                        <div class="text-center flex-grow">
-                            <h2 class="font-brand text-xl md:text-2xl font-black tracking-widest uppercase">${madrasahName}</h2>
+                <div id="target-tabulation-a4-node" class="bg-slate-900 p-2 shadow-lg font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
+                    <div class="bg-white border-2 border-amber-500 rounded-xl p-6 h-full flex flex-col">
+                        <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
+                            <div class="flex items-center gap-4 text-left">
+                                <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-500 shadow-md shrink-0">
+                                <div>
+                                    <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest whitespace-nowrap">${madrasahName}</h1>
+                                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">MOHORA, CHANDGAON, CHITTGONG.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="bg-slate-900 text-amber-400 px-4 py-1.5 rounded-lg font-black text-[11px] uppercase tracking-wider shadow-md border-b-4 border-slate-950 inline-block">
+                                    Tabulation Sheet
+                                </div>
+                            </div>
                         </div>
-                        <span class="inline-block bg-amber-500 text-slate-900 px-3 py-1 rounded-full font-black text-[11px] uppercase tracking-wide shrink-0 whitespace-nowrap">Tabulation Sheet</span>
-                    </div>
-                    <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800">
-                        <span>${exm}</span>
-                        <span>Class: <span class="text-amber-700">${cls}</span></span>
-                        <span>Session: <span class="text-amber-700">${ses}</span></span>
-                        <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
-                    </div>
-                    <div class="p-2 flex-grow">
-                        <table class="w-full table-auto border-collapse border border-slate-900 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800 mb-2">
+                            <span>${exm}</span>
+                            <span>Class: <span class="text-amber-700">${cls}</span></span>
+                            <span>Session: <span class="text-amber-700">${ses}</span></span>
+                            <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
+                        </div>
+                        <div class="p-2 flex-grow">
+                            <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        </div>
                     </div>
                 </div>
             `;
-            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="executeIsolatedPrint('target-tabulation-a4-node', 'landscape')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 px-4 py-3.5 rounded-xl font-bold text-sm shadow-lg w-full transition"><i class="fa-solid fa-print mr-2"></i> Print Tabulation Sheet</button></div>`;
+            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="executeDirectPrint('target-tabulation-a4-node', 'landscape')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 px-4 py-3.5 rounded-xl font-bold text-sm shadow-lg w-full transition"><i class="fa-solid fa-print mr-2"></i> Print Tabulation Sheet</button></div>`;
             printArea.classList.remove('hidden'); 
             printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -606,7 +620,7 @@
         async function autoFitA4Marksheet(elementId) {
             const sheet = document.getElementById(elementId);
             if (!sheet) return 1;
-            sheet.style.transform = 'none'; sheet.style.height = 'auto'; 
+            sheet.style.transform = 'none'; sheet.style.height = '1123px'; // Locked to exactly A4 height
             await document.fonts.ready;
             const images = sheet.querySelectorAll('img');
             await Promise.all(Array.from(images).map(img => {
@@ -642,42 +656,34 @@
             } finally { btn.innerHTML = origText; }
         }
 
-        // UNIVERSAL PRINT ISOLATION
-        function executeIsolatedPrint(targetNodeId, orientation) {
-            const targetElement = document.getElementById(targetNodeId);
-            if(!targetElement) return;
-
-            if(orientation === 'portrait') { targetElement.style.transform = 'none'; targetElement.style.height = '1123px'; } 
-            else { targetElement.style.transform = 'none'; targetElement.style.width = '1123px'; targetElement.style.height = '794px'; }
-
-            const printFrame = document.getElementById('isolated-print-frame');
-            const frameDoc = printFrame.contentWindow.document;
-            const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+        // DIRECT WINDOW PRINT (100% RELIABLE)
+        function executeDirectPrint(targetNodeId, orientation) {
+            // First auto fit
+            if(orientation === 'portrait') {
+                autoFitA4Marksheet(targetNodeId).then(() => { performPrint(orientation); });
+            } else {
+                document.getElementById(targetNodeId).style.transform = 'none'; 
+                performPrint(orientation);
+            }
             
-            const pageCss = orientation === 'portrait' ? 
-                `@page { size: A4 portrait; margin: 0mm !important; } .print-safe-wrap { width: 794px; height: 1123px; transform: scale(0.96); transform-origin: top center; margin-top: 5mm; }` :
-                `@page { size: A4 landscape; margin: 0mm !important; } .print-safe-wrap { width: 1123px; height: 794px; transform: scale(0.96); transform-origin: top center; margin-top: 5mm; }`;
+            function performPrint(orient) {
+                let pageStyle = document.getElementById('dynamic-print-style');
+                if (!pageStyle) {
+                    pageStyle = document.createElement('style');
+                    pageStyle.id = 'dynamic-print-style';
+                    document.head.appendChild(pageStyle);
+                }
+                
+                if (orient === 'landscape') {
+                    pageStyle.innerHTML = `@page { size: A4 landscape; margin: 0 !important; }`;
+                } else {
+                    pageStyle.innerHTML = `@page { size: A4 portrait; margin: 0 !important; }`;
+                }
 
-            frameDoc.open();
-            frameDoc.write(`
-                <!DOCTYPE html><html><head><title>Print Document</title>
-                <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Amiri:wght@700&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-                <script src="https://cdn.tailwindcss.com"><\/script>
-                ${styles}
-                <style>
-                    ${pageCss}
-                    html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
-                    .no-print { display: none !important; }
-                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-                </style>
-                </head><body><div class="print-safe-wrap">${targetElement.outerHTML}</div></body></html>
-            `);
-            frameDoc.close();
-            
-            setTimeout(() => { 
-                printFrame.contentWindow.focus(); 
-                printFrame.contentWindow.print(); 
-            }, 1200);
+                setTimeout(() => { 
+                    window.print(); 
+                }, 300);
+            }
         }
 
         window.onload = function() {
