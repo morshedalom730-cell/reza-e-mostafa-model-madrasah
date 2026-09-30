@@ -18,20 +18,19 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
         
-        /* PREMIUM A4 MARKSHEET SYSTEM (BORDER FIXED) */
+        /* PREMIUM A4 MARKSHEET SYSTEM */
         .a4-print-wrapper {
             width: 794px; height: 1123px; background-color: #ffffff; margin: 0 auto;
             position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
         .islamic-a4-sheet {
-            width: 100%; height: 100%; background: #ffffff;
-            border: 14px solid #1e3a8a; /* Deep Royal Blue Outer */
+            width: 794px; height: 1123px; background: #ffffff;
+            border: 14px solid #1e3a8a; 
             padding: 8px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
         }
         .blue-inner-border {
-            border: 3px double #d97706; /* Golden Double Inner */
-            border-radius: 8px;
+            border: 3px double #d97706; border-radius: 8px;
             width: 100%; height: 100%; flex-grow: 1; padding: 25px 30px; box-sizing: border-box; 
             display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
         }
@@ -53,7 +52,8 @@
             body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
             body * { visibility: hidden !important; }
             #printable-area, #printable-area * { visibility: visible !important; }
-            #printable-area { display: flex !important; justify-content: center; align-items: flex-start; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+            #printable-area { display: flex !important; justify-content: center; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+            @page { size: A4 portrait; margin: 0mm !important; } 
             .no-print { display: none !important; }
         }
     </style>
@@ -62,7 +62,7 @@
 
     <div class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print border-b-2 border-amber-500">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3.5">
-            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA D. MODEL MADRASA</h1>
+            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider uppercase">REZA-E MUSTAFA D. MODEL MADRASA</h1>
             <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
                 <button onclick="showPage('home')" class="hover:text-amber-400 pb-1 text-slate-300">Home</button>
                 <button onclick="showPage('result')" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
@@ -207,7 +207,6 @@
     </main>
 
     <script>
-        // Firebase Configuration 
         const firebaseConfig = {
             apiKey: "AIzaSyDG57Z-2T1KqzTzF-DuP7Mfk84D2SRPMZ4",
             authDomain: "annur-international-madrasah.firebaseapp.com",
@@ -406,17 +405,17 @@
 
             let subjectRowsHTML = '';
             if (subjectCount === 0) {
-                subjectRowsHTML = `<tr><td colspan="5" class="py-6 text-center font-bold text-slate-500">No subject marks recorded.</td></tr>`;
+                subjectRowsHTML = `<tr><td colspan="5" class="py-6 text-center font-bold text-gray-500">No subject marks recorded.</td></tr>`;
             } else {
                 validSubjects.forEach(item => {
                     const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
                     const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
                     subjectRowsHTML += `
-                        <tr class="border-b border-slate-300 bg-transparent hover:bg-slate-50">
-                            <td class="${rowPadClass} border-r border-slate-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
-                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-slate-300">${item.subObj.full}</td>
-                            <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-slate-300">${item.mark}</td>
-                            <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-slate-300 font-montserrat">${gradeInfo.lg}</td>
+                        <tr class="border-b border-gray-300 bg-transparent">
+                            <td class="${rowPadClass} border-r border-gray-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
+                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-gray-300">${item.subObj.full}</td>
+                            <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-gray-300">${item.mark}</td>
+                            <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-gray-300 font-montserrat">${gradeInfo.lg}</td>
                             <td class="${rowPadClass} text-center text-slate-900 w-20 font-montserrat">${gradeInfo.gp}</td>
                         </tr>
                     `;
@@ -617,24 +616,6 @@
             printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        async function autoFitA4Marksheet(elementId) {
-            const sheet = document.getElementById(elementId);
-            if (!sheet) return 1;
-            sheet.style.transform = 'none'; sheet.style.height = '1123px'; // Locked to exactly A4 height
-            await document.fonts.ready;
-            const images = sheet.querySelectorAll('img');
-            await Promise.all(Array.from(images).map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => { img.onload = img.onerror = resolve; });
-            }));
-            const actualHeight = sheet.scrollHeight; const targetHeight = 1123;
-            let scale = 1;
-            if (actualHeight > targetHeight) { scale = (targetHeight / actualHeight) * 0.98; }
-            sheet.style.height = (actualHeight > targetHeight ? actualHeight : targetHeight) + 'px';
-            sheet.style.transform = `scale(${scale})`;
-            return scale;
-        }
-
         async function executeTranscriptPDFDownload(studentId, studentName) {
             const container = document.getElementById('pdf-export-container');
             const btn = event.target; const origText = btn.innerHTML;
@@ -656,34 +637,27 @@
             } finally { btn.innerHTML = origText; }
         }
 
-        // DIRECT WINDOW PRINT (100% RELIABLE)
+        // 100% RELIABLE DIRECT PRINT SYSTEM (LOCKS TO 1 PAGE)
         function executeDirectPrint(targetNodeId, orientation) {
-            // First auto fit
-            if(orientation === 'portrait') {
-                autoFitA4Marksheet(targetNodeId).then(() => { performPrint(orientation); });
-            } else {
-                document.getElementById(targetNodeId).style.transform = 'none'; 
-                performPrint(orientation);
+            let pageStyle = document.getElementById('dynamic-print-style');
+            if (!pageStyle) {
+                pageStyle = document.createElement('style');
+                pageStyle.id = 'dynamic-print-style';
+                document.head.appendChild(pageStyle);
             }
             
-            function performPrint(orient) {
-                let pageStyle = document.getElementById('dynamic-print-style');
-                if (!pageStyle) {
-                    pageStyle = document.createElement('style');
-                    pageStyle.id = 'dynamic-print-style';
-                    document.head.appendChild(pageStyle);
-                }
-                
-                if (orient === 'landscape') {
-                    pageStyle.innerHTML = `@page { size: A4 landscape; margin: 0 !important; }`;
-                } else {
-                    pageStyle.innerHTML = `@page { size: A4 portrait; margin: 0 !important; }`;
-                }
+            pageStyle.innerHTML = `
+                @page { size: A4 ${orientation}; margin: 0mm !important; }
+                html, body { height: 100vh !important; max-height: 100vh !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: #fff !important; }
+                #printable-area { position: absolute !important; top: 0 !important; left: 0 !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; justify-content: center !important; align-items: flex-start !important; padding-top: 15px !important; background: #fff !important; }
+                #printable-area > div { transform: scale(0.95) !important; transform-origin: top center !important; box-shadow: none !important; border-radius: 0 !important; }
+                .no-print { display: none !important; }
+            `;
 
-                setTimeout(() => { 
-                    window.print(); 
-                }, 300);
-            }
+            setTimeout(() => { 
+                window.print(); 
+                setTimeout(() => { if (pageStyle) pageStyle.innerHTML = ''; }, 1000);
+            }, 300);
         }
 
         window.onload = function() {
