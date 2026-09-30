@@ -18,7 +18,7 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.3; }
         
-        /* EXACT 1-PAGE A4 SYSTEM (OVERLAP & MARGIN FIXED) */
+        /* EXACT 1-PAGE A4 SYSTEM (PREVENTS 2ND PAGE COMPLETELY) */
         .a4-print-wrapper {
             width: 794px; height: 1060px; max-height: 1060px; background-color: #ffffff; margin: 0 auto;
             position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); box-sizing: border-box;
@@ -36,15 +36,15 @@
         }
         .marksheet-large-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 440px; height: 440px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
+            width: 460px; height: 460px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
         }
 
         .student-info-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
             background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 14px 16px; border-radius: 6px; position: relative; z-index: 10;
         }
-        .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 12.5px; color: #0f172a; line-height: 1.3; }
-        .info-item span.label { font-weight: 700; width: 110px; color: #475569; }
+        .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 13.5px; color: #0f172a; line-height: 1.4; }
+        .info-item span.label { font-weight: 700; width: 130px; color: #475569; }
         .info-item span.value { font-weight: 800; text-transform: uppercase; }
 
         @media print {
@@ -57,11 +57,13 @@
                 position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 0 !important;
             }
             .a4-print-wrapper {
-                box-shadow: none !important; margin: 0 auto !important;
-                page-break-inside: avoid !important; break-inside: avoid !important;
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-            /* STRICK ZERO MARGIN TO HIDE BROWSER TEXTS (DATE, LINK, ETC) */
-            @page { size: A4 portrait; margin: 0 !important; }
+            /* Fixed top margin to prevent sticking to the top edge */
+            @page { size: A4 portrait; margin: 12mm 0mm 0mm 0mm !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -212,9 +214,6 @@
         </div>
     </main>
 
-    <!-- Hidden iframe for Universal Print Isolation -->
-    <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDG57Z-2T1KqzTzF-DuP7Mfk84D2SRPMZ4",
@@ -364,7 +363,7 @@
         }
 
         // ===============================================
-        // PREFECT OVERLAP-FREE MARKSHEET GENERATOR
+        // EXACT SINGLE-PAGE MARKSHEET GENERATOR (LARGE FONTS)
         // ===============================================
         function searchResult() {
             const id = document.getElementById('search-student-id').value.trim().toUpperCase();
@@ -397,6 +396,7 @@
 
             const studentFather = (regS && regS.father) ? regS.father : 'N/A';
             
+            // Filter out blank subjects
             let validSubjects = [];
             currentConfig.forEach((subObj, sIdx) => {
                 const markVal = (student.marks && student.marks[sIdx] !== undefined) ? String(student.marks[sIdx]).trim() : '';
@@ -407,11 +407,13 @@
 
             const subjectCount = validSubjects.length;
             
+            // INCREASED FONT SIZES & PADDING
             const rowPadClass =
-                subjectCount <= 6  ? 'py-3 px-3 text-sm md:text-base font-bold' :
-                subjectCount <= 9  ? 'py-1.5 px-3 text-xs md:text-sm font-bold' :
-                subjectCount <= 12 ? 'py-1 px-2.5 text-[11px] md:text-xs font-bold' :
-                                     'py-0.5 px-2 text-[10px] md:text-[10.5px] font-bold';
+                subjectCount <= 6  ? 'py-4 px-4 text-xl md:text-2xl font-black' :
+                subjectCount <= 8  ? 'py-3 px-3 text-lg md:text-xl font-black' :
+                subjectCount <= 10 ? 'py-2 px-3 text-base md:text-lg font-extrabold' :
+                subjectCount <= 13 ? 'py-1.5 px-3 text-sm md:text-base font-bold' :
+                                     'py-1 px-2 text-xs md:text-sm font-bold';
 
             let subjectRowsHTML = '';
             if (subjectCount === 0) {
@@ -419,14 +421,14 @@
             } else {
                 validSubjects.forEach(item => {
                     const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
-                    const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[9px] bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
+                    const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-extrabold ml-1 font-montserrat">Optional</span>' : '';
                     subjectRowsHTML += `
                         <tr class="border-b border-gray-300 bg-transparent hover:bg-slate-50">
-                            <td class="${rowPadClass} border-r border-slate-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
-                            <td class="${rowPadClass} text-center text-slate-700 w-20 border-r border-slate-300">${item.subObj.full}</td>
-                            <td class="${rowPadClass} text-center text-slate-950 w-24 border-r border-slate-300">${item.mark}</td>
-                            <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-slate-300 font-montserrat">${gradeInfo.lg}</td>
-                            <td class="${rowPadClass} text-center text-slate-900 w-20 font-montserrat">${gradeInfo.gp}</td>
+                            <td class="${rowPadClass} border-r border-slate-300 text-slate-900 uppercase">${item.subObj.name}${typeLabel}</td>
+                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-slate-300">${item.subObj.full}</td>
+                            <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-slate-300">${item.mark}</td>
+                            <td class="${rowPadClass} text-center text-slate-900 w-24 border-r border-slate-300 font-montserrat">${gradeInfo.lg}</td>
+                            <td class="${rowPadClass} text-center text-slate-900 w-24 font-montserrat">${gradeInfo.gp}</td>
                         </tr>
                     `;
                 });
@@ -443,39 +445,39 @@
                             <div class="relative z-10 w-full flex-grow flex flex-col justify-between h-full">
                                 
                                 <div>
-                                    <div class="text-center mb-1">
-                                        <h2 class="arabic-calligraphy text-[24px] text-slate-800">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
+                                    <div class="text-center mb-1.5">
+                                        <h2 class="arabic-calligraphy text-[26px] text-slate-800">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
                                     </div>
                                     
-                                    <!-- FIXED HEADER FOR NO OVERLAP -->
-                                    <div class="flex items-center justify-between border-b-2 border-slate-300 pb-2 mb-2.5">
-                                        <div class="flex items-center gap-3 flex-1 pr-2 text-left">
+                                    <!-- HEADER -->
+                                    <div class="flex items-center justify-between border-b-2 border-slate-300 pb-2 mb-3">
+                                        <div class="flex items-center gap-4 flex-1 pr-2 text-left">
                                             <div class="shrink-0">
-                                                <img src="${universalLogo}" alt="Logo" class="w-[72px] h-[72px] object-contain p-1 border-[2.5px] border-amber-500 rounded-full shadow-md bg-white">
+                                                <img src="${universalLogo}" alt="Logo" class="w-[85px] h-[85px] object-contain p-1 border-[3px] border-amber-500 rounded-full shadow-md bg-white">
                                             </div>
                                             <div class="flex-1">
-                                                <h1 class="font-brand text-[21px] font-black text-slate-950 tracking-wider uppercase leading-tight">${madrasahName}</h1>
-                                                <p class="text-[10.5px] text-slate-600 font-bold mt-1 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTAGONG.</p>
+                                                <h1 class="font-brand text-[23px] font-black text-slate-950 tracking-wider uppercase leading-tight">${madrasahName}</h1>
+                                                <p class="text-[11.5px] text-slate-600 font-bold mt-1 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTAGONG.</p>
                                             </div>
                                         </div>
                                         <div class="shrink-0 text-right flex flex-col items-end justify-center space-y-1 border-l-2 border-dashed border-slate-200 pl-3">
-                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-[56px] h-[56px] border border-slate-300 rounded p-0.5 opacity-90 shadow-sm">
-                                            <p class="font-montserrat text-[8.5px] font-black text-slate-700 tracking-widest mt-0.5">VERIFIED</p>
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-[64px] h-[64px] border border-slate-300 rounded p-0.5 opacity-90 shadow-sm">
+                                            <p class="font-montserrat text-[9.5px] font-black text-slate-700 tracking-widest mt-0.5">VERIFIED</p>
                                         </div>
                                     </div>
 
                                     <!-- TAGS -->
-                                    <div class="flex flex-col items-center justify-center space-y-1.5 mb-2.5 relative z-10">
-                                        <div class="bg-amber-100 border border-amber-300 text-amber-900 px-6 py-1 rounded-full font-bold text-[10.5px] uppercase tracking-widest shadow-sm font-montserrat">
+                                    <div class="flex flex-col items-center justify-center space-y-2 mb-3 relative z-10">
+                                        <div class="bg-amber-100 border border-amber-300 text-amber-900 px-6 py-1.5 rounded-full font-bold text-[12px] uppercase tracking-widest shadow-sm font-montserrat">
                                             ${student.exam || 'ANNUAL EXAMINATION'}
                                         </div>
-                                        <div class="bg-slate-800 text-amber-400 px-8 py-1.5 rounded-lg font-black text-[13px] uppercase tracking-widest shadow font-montserrat border-b-[3px] border-slate-950">
+                                        <div class="bg-slate-800 text-amber-400 px-8 py-2 rounded-lg font-black text-[14px] uppercase tracking-widest shadow font-montserrat border-b-[3px] border-slate-950">
                                             ACADEMIC TRANSCRIPT
                                         </div>
                                     </div>
 
                                     <!-- STUDENT INFO GRID -->
-                                    <div class="student-info-grid mb-2.5">
+                                    <div class="student-info-grid mb-3">
                                         <div class="info-item"><span class="label">STUDENT ID</span><span class="value">: ${student.id}</span></div>
                                         <div class="info-item"><span class="label">CLASS</span><span class="value">: ${student.class}</span></div>
                                         <div class="info-item"><span class="label">STUDENT NAME</span><span class="value">: ${student.name}</span></div>
@@ -484,51 +486,51 @@
                                     </div>
 
                                     <!-- MARKS TABLE -->
-                                    <div class="mt-1">
+                                    <div class="mt-2">
                                         <table class="w-full border-collapse border-2 border-slate-900 rounded-lg overflow-hidden bg-white shadow-sm">
                                             <thead>
-                                                <tr class="bg-slate-900 text-amber-400 uppercase text-xs font-montserrat tracking-wide">
-                                                    <th class="py-1.5 px-3 text-left border-r border-slate-700">Course / Subject Title</th>
-                                                    <th class="py-1.5 px-2 text-center w-20 border-r border-slate-700">Full Marks</th>
-                                                    <th class="py-1.5 px-2 text-center w-24 border-r border-slate-700">Obtained</th>
-                                                    <th class="py-1.5 px-2 text-center w-20 border-r border-slate-700">Grade</th>
-                                                    <th class="py-1.5 px-2 text-center w-20">GP</th>
+                                                <tr class="bg-slate-900 text-amber-400 uppercase text-[13px] md:text-[14px] font-montserrat tracking-wide">
+                                                    <th class="py-2.5 px-4 text-left border-r border-slate-700">Course / Subject Title</th>
+                                                    <th class="py-2.5 px-2 text-center w-24 border-r border-slate-700">Full Marks</th>
+                                                    <th class="py-2.5 px-2 text-center w-28 border-r border-slate-700">Obtained</th>
+                                                    <th class="py-2.5 px-2 text-center w-24 border-r border-slate-700">Grade</th>
+                                                    <th class="py-2.5 px-2 text-center w-24">GP</th>
                                                 </tr>
                                             </thead>
                                             <tbody>${subjectRowsHTML}</tbody>
                                         </table>
                                     </div>
 
-                                    <!-- SUMMARY -->
-                                    <div class="border-2 border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs font-bold text-slate-950 mt-2.5 bg-slate-50 relative z-10 shadow-sm">
-                                        <div class="text-center px-3">
-                                            <span class="text-slate-700 block text-[9px] uppercase font-montserrat tracking-wide">Total Marks</span>
-                                            <span class="text-2xl text-amber-700 font-black">${stats.total}</span>
+                                    <!-- SUMMARY BOX (LARGER FONTS) -->
+                                    <div class="border-[3px] border-slate-800 p-3 rounded-xl flex justify-between items-center text-sm font-bold text-slate-950 mt-3.5 bg-slate-50 relative z-10 shadow-sm">
+                                        <div class="text-center px-4">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Total Marks</span>
+                                            <span class="text-3xl text-amber-700 font-black">${stats.total}</span>
                                         </div>
-                                        <div class="text-center border-x-2 border-slate-300 px-6">
-                                            <span class="text-slate-700 block text-[9px] uppercase font-montserrat tracking-wide">GPA</span>
-                                            <span class="text-2xl text-slate-900 font-black">${stats.gpa}</span>
+                                        <div class="text-center border-x-2 border-slate-300 px-8">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">GPA</span>
+                                            <span class="text-3xl text-slate-900 font-black">${stats.gpa}</span>
                                         </div>
-                                        <div class="text-center border-r-2 border-slate-300 pr-6">
-                                            <span class="text-slate-700 block text-[9px] uppercase font-montserrat tracking-wide">Letter Grade</span>
-                                            <span class="text-2xl text-slate-900 font-black">${stats.grade}</span>
+                                        <div class="text-center border-r-2 border-slate-300 pr-8">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Letter Grade</span>
+                                            <span class="text-3xl text-slate-900 font-black">${stats.grade}</span>
                                         </div>
-                                        <div class="text-right px-3">
-                                            <span class="text-slate-700 block text-[9px] uppercase font-montserrat tracking-wide">Remarks</span>
-                                            <span class="text-lg text-slate-900 font-black uppercase">${stats.remarks}</span>
+                                        <div class="text-right px-4">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Remarks</span>
+                                            <span class="text-2xl text-slate-900 font-black uppercase">${stats.remarks}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- SIGNATURES -->
-                                <div class="pt-6 pb-1 flex justify-between items-end text-xs text-slate-900 font-bold px-6">
+                                <div class="pt-8 pb-1 flex justify-between items-end text-xs text-slate-900 font-bold px-6">
                                     <div class="text-center">
-                                        <div class="w-40 border-t-[2px] border-slate-800 mb-1"></div>
-                                        <span class="font-montserrat text-[11px] uppercase tracking-wide">Guardian Signature</span>
+                                        <div class="w-44 border-t-[2px] border-slate-800 mb-1.5"></div>
+                                        <span class="font-montserrat text-[12px] uppercase tracking-wide">Guardian Signature</span>
                                     </div>
                                     <div class="text-center">
-                                        <div class="w-40 border-t-[2.5px] border-slate-950 mb-1"></div>
-                                        <span class="text-slate-950 font-black font-montserrat text-[11px] uppercase tracking-widest">Principal Signature</span>
+                                        <div class="w-44 border-t-[2.5px] border-slate-950 mb-1.5"></div>
+                                        <span class="text-slate-950 font-black font-montserrat text-[12px] uppercase tracking-widest">Principal Signature</span>
                                     </div>
                                 </div>
 
@@ -660,7 +662,7 @@
             
             pageStyle.innerHTML = `
                 @media print {
-                    @page { size: A4 ${orientation}; margin: 0 !important; }
+                    @page { size: A4 ${orientation}; margin: 12mm 0mm 0mm 0mm !important; }
                     html, body { 
                         width: 100% !important; 
                         height: 100% !important; 
@@ -676,7 +678,6 @@
                         page-break-after: avoid !important;
                         page-break-inside: avoid !important;
                         margin: 0 auto !important;
-                        margin-top: 20px !important; /* PERFECT TOP MARGIN WITHOUT BROWSER HEADERS */
                         transform: scale(0.96) !important;
                         transform-origin: top center !important;
                     }
