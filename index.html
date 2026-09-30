@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - REZA-E MUSTAFA SM. MODEL MADRASA</title>
+    <title>Result System - REZA-E MUSTAFA D. MODEL MADRASA</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,239 +18,110 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
         
-        /* A4 ID CARD SYSTEM */
-        .id-card-exact-replica { width: 335px; height: 550px; background: #ffffff; position: relative; overflow: hidden; border: 1.5px solid #cbd5e1; box-shadow: 0 16px 35px rgba(0,0,0,0.18); display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
-        .id-top-decor { position: absolute; top: 0; left: 0; width: 100%; height: 48px; pointer-events: none; z-index: 10; }
-        .id-bottom-decor { position: absolute; bottom: 0; right: 0; width: 100%; height: 42px; pointer-events: none; z-index: 10; }
-        .id-info-watermark-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 155px; height: 155px; opacity: 0.08; pointer-events: none; z-index: 1; object-fit: contain; }
-        .id-card-badge-box { border: 2px solid #005a8c; background: #e2e8f0; color: #003865; font-weight: 900; font-size: 15px; letter-spacing: 2px; padding: 3px 22px; display: inline-block; }
-        .id-cadet-photo-frame { width: 140px; height: 140px; border: 4px solid #047857; border-radius: 50%; object-fit: cover; margin: 6px auto; display: block; background: #f8fafc; position: relative; z-index: 5; }
+        /* PREMIUM A4 MARKSHEET SYSTEM */
+        .a4-print-wrapper {
+            width: 794px; height: 1123px; background-color: #ffffff; margin: 0 auto;
+            position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .islamic-a4-sheet {
+            width: 794px; min-height: 1123px; background: #ffffff;
+            border: 12px solid #0f172a; 
+            padding: 6px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
+        }
+        .blue-inner-border {
+            border: 2px solid #d97706; outline: 1px solid #d97706; outline-offset: 3px;
+            width: 100%; height: 100%; flex-grow: 1; padding: 30px; box-sizing: border-box; 
+            display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
+        }
+        .marksheet-large-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 480px; height: 480px; opacity: 0.05; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
+        }
 
-        /* TABULATION PRINT SYSTEM */
-        .a4-print-wrapper { width: 1123px; min-height: 794px; background-color: #ffffff; margin: 0 auto; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        .islamic-a4-sheet { width: 1123px; min-height: 794px; background: #ffffff; border: 12px solid #0f172a; padding: 6px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center; }
-        .blue-inner-border { border: 2px solid #d97706; outline: 1px solid #d97706; outline-offset: 3px; width: 100%; height: 100%; flex-grow: 1; padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd; }
-        
+        .student-info-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+            background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 15px; border-radius: 8px; position: relative; z-index: 10;
+        }
+        .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 13px; color: #0f172a; }
+        .info-item span.label { font-weight: 700; width: 120px; color: #475569; }
+        .info-item span.value { font-weight: 800; text-transform: uppercase; }
+
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
             body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
             body * { visibility: hidden !important; }
             #printable-area, #printable-area * { visibility: visible !important; }
             #printable-area { display: flex !important; justify-content: center; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
-            @page { size: A4 landscape; margin: 0mm !important; } 
+            @page { size: A4 portrait; margin: 0mm !important; } 
             .no-print { display: none !important; }
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen selection:bg-slate-800 selection:text-white">
 
-    <!-- SECURE LOGIN SCREEN -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full border-t-4 border-amber-500 text-center">
-            <div class="w-20 h-20 mx-auto mb-4 bg-slate-100 text-slate-900 rounded-full flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-graduation-cap"></i></div>
-            <h2 class="text-2xl font-bold text-slate-900 mb-1">Result System</h2>
-            <p class="text-[10px] text-slate-500 mb-6 font-bold uppercase tracking-widest">REZA-E MUSTAFA SM. MODEL MADRASA</p>
-            <input type="password" id="login-password" class="w-full p-3.5 border-2 border-slate-200 rounded-xl mb-4 font-bold text-center outline-none focus:border-slate-600" placeholder="Enter Password">
-            <button onclick="checkAdminLogin()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition shadow-lg tracking-wide">Access Portal</button>
+    <div class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print border-b-2 border-amber-500">
+        <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3.5">
+            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA D. MODEL MADRASA</h1>
+            <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
+                <button onclick="showPage('home')" class="hover:text-amber-400 pb-1 text-slate-300">Home</button>
+                <button onclick="showPage('result')" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
+                <button onclick="showPage('public-student-search')" class="hover:text-amber-400 pb-1 text-slate-300">Verify</button>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN APP DASHBOARD -->
-    <div id="admin-dashboard" class="hidden flex-grow pb-12">
-        <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print border-b-2 border-amber-500">
-            <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3.5">
-                <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">RMS CLOUD</h1>
-                <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
-                    <button onclick="switchTab('students')" id="tab-students" class="text-amber-400 border-b-2 border-amber-400 pb-1">Students</button>
-                    <button onclick="switchTab('marks')" id="tab-marks" class="hover:text-amber-400 pb-1 text-slate-300">Marks Entry</button>
-                    <button onclick="switchTab('attendance')" id="tab-attendance" class="hover:text-amber-400 pb-1 text-slate-300">Attendance</button>
-                    <button onclick="switchTab('print')" id="tab-print" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
-                    <button onclick="switchTab('settings')" id="tab-settings" class="hover:text-amber-400 pb-1 text-slate-300"><i class="fa-solid fa-gear"></i></button>
+    <main class="container mx-auto px-4 py-8 flex-grow max-w-6xl">
+        <div id="page-home" class="space-y-8 no-print">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-6 md:p-8 rounded-3xl shadow-xl text-white text-center">
+                <div class="w-24 h-24 mx-auto mb-4 bg-white p-2 rounded-xl shadow-lg border-2 border-amber-500">
+                    <img id="madrasha-logo" src="https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg" alt="Logo" class="w-full h-full object-contain universal-logo-target">
                 </div>
+                <h2 class="text-2xl md:text-3xl font-brand font-bold mt-2 text-amber-400 uppercase tracking-widest">REZA-E MUSTAFA D. MODEL MADRASA</h2>
+                <p class="text-xs md:text-sm text-slate-300 mt-2 font-bold tracking-wide uppercase">Official Result Portal</p>
             </div>
-        </nav>
 
-        <div class="container mx-auto px-4 pt-8 max-w-7xl space-y-6">
-            
-            <!-- TAB 1: STUDENTS -->
-            <div id="sec-students" class="space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-5">
-                        <h3 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-user-plus text-amber-500 mr-2"></i>Student Registration</h3>
-                        <span id="total-registered-badge" class="bg-slate-800 text-amber-400 text-xs px-4 py-1.5 rounded-full font-bold shadow">Total: 0</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+                <div onclick="showPage('result')" class="cursor-pointer bg-white hover:bg-slate-50 text-slate-800 p-6 rounded-2xl shadow-md border border-slate-200 transition transform hover:-translate-y-1">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-amber-500 text-slate-900 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md shrink-0"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                        <div>
+                            <h3 class="font-extrabold text-lg md:text-xl text-slate-900 flex items-center gap-2">পরীক্ষার ফলাফল</h3>
+                            <p class="text-xs text-slate-500 mt-0.5 font-bold">ব্যক্তিগত অফিসিয়াল মার্কশিট ডাউনলোড</p>
+                        </div>
                     </div>
-                    <form onsubmit="handleRegisterStudent(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-                        <div class="md:col-span-2"><label class="block font-bold mb-1 text-slate-600">Student Name *</label><input type="text" id="reg-name" required class="w-full p-2.5 border border-slate-300 rounded-xl font-bold uppercase focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                        <div class="md:col-span-2"><label class="block font-bold mb-1 text-slate-600">Father's Name *</label><input type="text" id="reg-father" required class="w-full p-2.5 border border-slate-300 rounded-xl font-bold uppercase focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                        
-                        <div><label class="block font-bold mb-1 text-slate-600">Student ID *</label><input type="text" id="reg-id" required class="w-full p-2.5 border border-slate-300 rounded-xl font-black uppercase text-slate-800 focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-600">Class / Level *</label>
-                            <select id="reg-class" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-slate-50 font-bold text-slate-800 cursor-pointer outline-none">
-                                <option value="Nursery">Nursery</option>
-                                <option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option>
-                                <option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option>
-                                <option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option>
-                                <option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option>
-                                <option value="Class Nine">Class Nine</option>
-                                <option value="Class Ten">Class Ten</option>
-                            </select>
-                        </div>
-                        <div><label class="block font-bold mb-1 text-slate-600">Mobile Number</label><input type="tel" id="reg-phone" class="w-full p-2.5 border border-slate-300 rounded-xl outline-none"></div>
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-600">Status</label>
-                            <select id="reg-status" class="w-full p-2.5 border border-slate-300 rounded-xl bg-slate-50 font-bold outline-none">
-                                <option value="Active" selected>Active</option>
-                                <option value="Deactivated">Deactivated</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-4 flex justify-end mt-2">
-                            <button type="submit" id="reg-submit-btn" class="bg-slate-800 text-amber-400 font-bold py-3 px-8 rounded-xl shadow-lg w-full md:w-auto hover:bg-slate-900 transition"><i class="fa-solid fa-check mr-2"></i> Register Student</button>
-                        </div>
-                    </form>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                        <input type="text" id="student-db-search" onkeyup="renderStudentDBTable()" placeholder="Search by ID or Name..." class="p-2.5 border border-slate-300 rounded-xl w-full max-w-sm text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-slate-400">
-                        <select id="student-db-search-class" onchange="renderStudentDBTable()" class="p-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 bg-slate-50 outline-none">
-                            <option value="ALL" selected>All Classes</option>
-                            <option value="Nursery">Nursery</option>
-                            <option value="Class One">Class One</option>
-                            <option value="Class Two">Class Two</option>
-                            <option value="Class Three">Class Three</option>
-                            <option value="Class Four">Class Four</option>
-                            <option value="Class Five">Class Five</option>
-                            <option value="Class Six">Class Six</option>
-                            <option value="Class Seven">Class Seven</option>
-                            <option value="Class Eight">Class Eight</option>
-                            <option value="Class Nine">Class Nine</option>
-                            <option value="Class Ten">Class Ten</option>
-                        </select>
-                    </div>
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="bg-slate-800 text-white">
-                                    <th class="p-3 border border-slate-700 text-center">SL</th>
-                                    <th class="p-3 border border-slate-700">ID</th><th class="p-3 border border-slate-700">Name</th>
-                                    <th class="p-3 border border-slate-700">Father's Name</th><th class="p-3 border border-slate-700">Class</th>
-                                    <th class="p-3 border border-slate-700">Mobile</th><th class="p-3 border border-slate-700">Status</th>
-                                    <th class="p-3 border border-slate-700 text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="student-db-table-body" class="bg-white"></tbody>
-                        </table>
+                <div onclick="showPage('public-student-search')" class="cursor-pointer bg-white hover:bg-slate-50 text-slate-800 p-6 rounded-2xl shadow-md border border-slate-200 transition transform hover:-translate-y-1">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-slate-800 text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md shrink-0"><i class="fa-solid fa-user-check"></i></div>
+                        <div>
+                            <h3 class="font-extrabold text-lg md:text-xl text-slate-900 flex items-center gap-2">শিক্ষার্থী যাচাই</h3>
+                            <p class="text-xs text-slate-500 mt-0.5 font-bold">আইডি দিয়ে ভর্তি স্ট্যাটাস চেক করুন</p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- TAB 2: MARKS ENTRY -->
-            <div id="sec-marks" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 space-y-5">
-                    <div class="flex flex-wrap justify-between items-center border-b border-slate-200 pb-3 gap-2">
-                        <h3 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-file-excel text-green-600 mr-2"></i>Results & Marks Entry</h3>
-                        <div class="flex gap-2">
-                            <button onclick="addSubjectColumn()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs px-4 py-2.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Add Subject</button>
-                            <button onclick="syncRegisteredStudentsToResults()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-rotate mr-1"></i> Sync Students</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Select Class:</label>
-                            <select id="admin-global-class" onchange="renderExcelTable()" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold bg-white text-slate-900 outline-none">
-                                <option value="Nursery">Nursery</option>
-                                <option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option>
-                                <option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option>
-                                <option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option>
-                                <option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option>
-                                <option value="Class Nine">Class Nine</option>
-                                <option value="Class Ten">Class Ten</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Session:</label>
-                            <select id="admin-global-session" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold bg-white text-slate-900 outline-none">
-                                <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
-                                <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Exam Term:</label>
-                            <select id="admin-global-exam" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold bg-white text-slate-900 outline-none">
-                                <option value="Monthly Examination">Monthly Examination</option>
-                                <option value="1st Term Examination">1st Term Examination</option>
-                                <option value="Half Yearly Examination">Half Yearly Examination</option>
-                                <option value="2nd Term Examination">2nd Term Examination</option>
-                                <option value="Annual Examination" selected>Annual Examination</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto border border-slate-300 rounded-xl mb-4 shadow-sm">
-                        <table class="w-full text-left border-collapse text-[10px] md:text-[11px]">
-                            <thead><tr id="excel-header-row" class="bg-slate-800 text-white"></tr></thead>
-                            <tbody id="excel-table-body" class="bg-white"></tbody>
-                        </table>
-                    </div>
-                    <button onclick="saveExcelData()" class="bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg w-full md:w-auto transition"><i class="fa-solid fa-floppy-disk mr-2"></i> Save Results to Cloud</button>
-                </div>
+        <!-- RESULT SEARCH PAGE -->
+        <div id="page-result" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-center space-x-3 border-b border-slate-200 pb-5 mb-6 no-print">
+                <button onclick="toggleResultTab('personal')" id="tab-btn-personal" class="bg-slate-800 text-amber-400 px-6 py-2.5 rounded-xl text-sm font-bold shadow transition">Individual Marksheet</button>
+                <button onclick="toggleResultTab('class')" id="tab-btn-class" class="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 transition">Tabulation Sheet</button>
             </div>
 
-            <!-- TAB: ATTENDANCE (NEW FEATURE) -->
-            <div id="sec-attendance" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-5">
-                        <h3 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-clipboard-user text-amber-500 mr-2"></i>Monthly Attendance Register</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+            <!-- Personal Search -->
+            <div id="result-view-personal" class="max-w-xl mx-auto no-print">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200">
+                    <div class="space-y-4 text-xs md:text-sm">
                         <div>
-                            <label class="block font-bold text-slate-600 mb-1">Select Class *</label>
-                            <select id="attendance-class" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
-                                <option value="Nursery">Nursery</option>
-                                <option value="Class One">Class One</option>
-                                <option value="Class Two">Class Two</option>
-                                <option value="Class Three">Class Three</option>
-                                <option value="Class Four">Class Four</option>
-                                <option value="Class Five">Class Five</option>
-                                <option value="Class Six">Class Six</option>
-                                <option value="Class Seven">Class Seven</option>
-                                <option value="Class Eight">Class Eight</option>
-                                <option value="Class Nine">Class Nine</option>
-                                <option value="Class Ten">Class Ten</option>
-                            </select>
+                            <label class="block font-bold mb-1.5 text-slate-700">Student ID *</label>
+                            <input type="text" id="search-student-id" placeholder="e.g. R25000" class="w-full p-3 border border-slate-300 rounded-xl font-bold uppercase outline-none focus:ring-2 focus:ring-slate-400">
                         </div>
-                        <div>
-                            <label class="block font-bold text-slate-600 mb-1">Month Name *</label>
-                            <input type="text" id="attendance-month" placeholder="e.g. January 2026" class="p-3 border border-slate-300 rounded-xl w-full font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-400">
-                        </div>
-                    </div>
-                    <button onclick="generateAttendanceSheet()" class="w-full max-w-md mx-auto block bg-slate-800 text-amber-400 py-3.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-900 transition tracking-wide">Generate Attendance Register</button>
-                </div>
-            </div>
-
-            <!-- TAB 3: PRINT RESULTS -->
-            <div id="sec-print" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                    <div class="flex justify-center space-x-3 border-b border-slate-200 pb-5 mb-6 no-print">
-                        <button onclick="toggleResultTab('class')" id="tab-btn-class" class="bg-slate-800 text-amber-400 px-6 py-2.5 rounded-xl text-sm font-bold shadow transition">Tabulation Sheet</button>
-                    </div>
-
-                    <!-- Class Print -->
-                    <div id="result-view-class" class="no-print">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 max-w-2xl mx-auto text-xs md:text-sm">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block font-bold text-slate-600 mb-1">Class *</label>
-                                <select id="class-result-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                                <label class="block font-bold mb-1 text-slate-700">Class *</label>
+                                <select id="search-student-class" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-bold outline-none cursor-pointer">
                                     <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
                                     <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
                                     <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
@@ -260,87 +131,80 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-600 mb-1">Session *</label>
-                                <select id="class-session-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                                <label class="block font-bold mb-1 text-slate-700">Session *</label>
+                                <select id="search-student-session" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-bold outline-none cursor-pointer">
                                     <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
                                     <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="block font-bold text-slate-600 mb-1">Exam Term *</label>
-                                <select id="class-exam-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
-                                    <option value="Monthly Examination">Monthly Examination</option>
-                                    <option value="1st Term Examination">1st Term Examination</option>
-                                    <option value="Half Yearly Examination">Half Yearly Examination</option>
-                                    <option value="2nd Term Examination">2nd Term Examination</option>
-                                    <option value="Annual Examination" selected>Annual Examination</option>
-                                </select>
-                            </div>
                         </div>
-                        <button onclick="showClassResultSheet()" class="w-full max-w-md mx-auto block bg-slate-800 text-amber-400 py-3.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-900 transition tracking-wide">Generate Tabulation Sheet</button>
+                        <div>
+                            <label class="block font-bold mb-1 text-slate-700">Exam Term *</label>
+                            <select id="search-student-exam" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-bold outline-none cursor-pointer">
+                                <option value="Monthly Examination">Monthly Examination</option>
+                                <option value="1st Term Examination">1st Term Examination</option>
+                                <option value="Half Yearly Examination">Half Yearly Examination</option>
+                                <option value="2nd Term Examination">2nd Term Examination</option>
+                                <option value="Annual Examination" selected>Annual Examination</option>
+                            </select>
+                        </div>
+                        <div class="pt-2">
+                            <button onclick="searchResult()" class="w-full bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 rounded-xl shadow-lg transition tracking-wide text-sm">Generate Marksheet</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: SETTINGS -->
-            <div id="sec-settings" class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-200 pb-3 mb-5">Madrasah Details & Logo</h3>
-                        <div class="space-y-4 text-sm">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Madrasah Name</label>
-                                <input type="text" id="set-madrasah-name" class="w-full p-3 border border-slate-300 rounded-xl font-bold text-slate-900 bg-slate-50" value="REZA-E MUSTAFA D. MODEL MADRASA" title="Edit to change globally">
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Universal Logo Image</label>
-                                <div class="flex items-center gap-4">
-                                    <img id="admin-logo-preview" src="" class="universal-logo-target w-16 h-16 object-contain border-2 border-slate-200 rounded-xl bg-white p-1">
-                                    <input type="file" id="universal-logo-file" accept="image/*" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-medium">
-                                </div>
-                            </div>
-                            <button onclick="saveSettings()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 w-full py-3 rounded-xl font-bold text-sm shadow-md transition mt-2">Save Settings</button>
-                        </div>
+            <!-- Class Print -->
+            <div id="result-view-class" class="hidden no-print">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 max-w-2xl mx-auto text-xs md:text-sm">
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Class *</label>
+                        <select id="class-result-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                            <option value="Nursery">Nursery</option><option value="Class One">Class One</option>
+                            <option value="Class Two">Class Two</option><option value="Class Three">Class Three</option>
+                            <option value="Class Four">Class Four</option><option value="Class Five">Class Five</option>
+                            <option value="Class Six">Class Six</option><option value="Class Seven">Class Seven</option>
+                            <option value="Class Eight">Class Eight</option><option value="Class Nine">Class Nine</option>
+                            <option value="Class Ten">Class Ten</option>
+                        </select>
                     </div>
-                    
-                    <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
-                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-200 pb-3 mb-5">Security & Update</h3>
-                        <div class="space-y-4 text-sm">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Change Panel Password</label>
-                                <input type="password" id="new-admin-pass" placeholder="New Admin Password" class="w-full p-3 border border-slate-300 rounded-xl font-bold outline-none focus:ring-2 focus:ring-blue-400">
-                            </div>
-                            <button onclick="changeAdminPassword()" class="bg-slate-700 hover:bg-slate-800 text-white w-full py-3 rounded-xl font-bold shadow transition">Update Password</button>
-                        </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Session *</label>
+                        <select id="class-session-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                            <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                            <option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Exam Term *</label>
+                        <select id="class-exam-dropdown" class="p-3 border border-slate-300 rounded-xl w-full bg-slate-50 font-bold text-slate-900 outline-none">
+                            <option value="Monthly Examination">Monthly Examination</option>
+                            <option value="1st Term Examination">1st Term Examination</option>
+                            <option value="Half Yearly Examination">Half Yearly Examination</option>
+                            <option value="2nd Term Examination">2nd Term Examination</option>
+                            <option value="Annual Examination" selected>Annual Examination</option>
+                        </select>
                     </div>
                 </div>
+                <button onclick="showClassResultSheet()" class="w-full max-w-md mx-auto block bg-slate-800 text-amber-400 py-3.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-900 transition tracking-wide">Generate Tabulation Sheet</button>
             </div>
 
             <!-- DYNAMIC PRINT AREA -->
             <div id="printable-area" class="mt-4 hidden no-print"></div>
         </div>
-    </div>
 
-    <!-- STUDENT EDIT MODAL POPUP -->
-    <div id="student-edit-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden no-print backdrop-blur-sm">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 border-[3px] border-slate-800">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                <h3 class="font-bold text-slate-900 text-base"><i class="fa-solid fa-pen-to-square text-amber-500 mr-2"></i>Edit Student Data</h3>
-                <button onclick="closeStudentEditModal()" class="text-red-600 font-bold text-2xl hover:text-red-800 leading-none">&times;</button>
-            </div>
-            <form onsubmit="saveEditedStudentData(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="edit-std-realindex">
-                <div><label class="block font-bold mb-1 text-slate-600">Student ID</label><input type="text" id="edit-std-id" required class="w-full p-2.5 border border-slate-300 rounded-xl font-bold uppercase focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                <div><label class="block font-bold mb-1 text-slate-600">Student Name</label><input type="text" id="edit-std-name" required class="w-full p-2.5 border border-slate-300 rounded-xl font-bold uppercase focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                <div><label class="block font-bold mb-1 text-slate-600">Father's Name</label><input type="text" id="edit-std-father" required class="w-full p-2.5 border border-slate-300 rounded-xl font-bold uppercase focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                <div><label class="block font-bold mb-1 text-slate-600">Mobile</label><input type="tel" id="edit-std-phone" class="w-full p-2.5 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-slate-400 outline-none"></div>
-                <div class="flex gap-3 pt-3">
-                    <button type="submit" class="bg-slate-800 text-amber-400 font-bold py-2.5 rounded-xl shadow-md w-full hover:bg-slate-900 transition">Save Changes</button>
-                    <button type="button" onclick="closeStudentEditModal()" class="bg-gray-300 text-slate-700 font-bold py-2.5 rounded-xl shadow-md w-1/3 hover:bg-gray-400 transition">Cancel</button>
+        <!-- CADET VERIFICATION -->
+        <div id="page-public-student-search" class="hidden max-w-4xl mx-auto space-y-6 no-print">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
+                <h2 class="text-xl font-bold text-center text-slate-900 mb-4"><i class="fa-solid fa-users text-amber-500 mr-2"></i>Student Verification</h2>
+                <div class="max-w-md mx-auto mb-6">
+                    <input type="text" id="public-search-input" onkeyup="renderPublicStudentSearch()" placeholder="Search by Cadet Name or ID..." class="w-full p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-slate-400 font-semibold text-xs md:text-sm">
                 </div>
-            </form>
+                <div id="public-student-results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Hidden iframe for Universal Print Isolation -->
     <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
@@ -359,513 +223,131 @@
         const db = firebase.database();
 
         let universalLogo = localStorage.getItem('m3_logo') || 'https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg';
-        let madrasahName = localStorage.getItem('m3_name') || 'REZA-E MUSTAFA D. MODEL MADRASA';
+        let madrasahName = 'REZA-E MUSTAFA D. MODEL MADRASA';
+        let resultPublishStatus = 'PUBLISHED'; let resultPublishDatetime = '';
         
         let subjectConfig = [
-            { name: 'Al Quran', full: 100, type: 'Main' }, { name: 'Arabic', full: 100, type: 'Main' }, { name: 'Bangla', full: 100, type: 'Main' }, { name: 'English', full: 100, type: 'Main' }, { name: 'Mathematics', full: 100, type: 'Main' }
+            { name: 'Al Quran', full: 100, type: 'Main' },
+            { name: 'Arabic', full: 100, type: 'Main' },
+            { name: 'Bangla', full: 100, type: 'Main' },
+            { name: 'English', full: 100, type: 'Main' },
+            { name: 'Mathematics', full: 100, type: 'Main' }
         ];
 
         let classSubjectConfig = {}; 
-        let currentClassSubjects = [];
         let registeredStudents = JSON.parse(localStorage.getItem('m3_db')) || [];
         let excelStudents = JSON.parse(localStorage.getItem('m3_results')) || [];
 
-        // --- AUTOMATIC DATA MIGRATION FOR CLASS NAMES ---
-        const classMigrationMap = {
-            'LEVEL-1': 'Class One', 'LEVEL-2': 'Class Two', 'LEVEL-3': 'Class Three', 'LEVEL-4': 'Class Four', 'LEVEL-5': 'Class Five', 'LEVEL-6': 'Class Six', 'LEVEL-7': 'Class Seven', 'LEVEL-8': 'Class Eight', 'LEVEL-9': 'Class Nine', 'LEVEL-10': 'Class Ten'
-        };
+        function applyUniversalLogo() { document.querySelectorAll('.universal-logo-target').forEach(img => img.src = universalLogo); }
 
-        function switchTab(tabId) {
-            ['students','marks','attendance','print','settings'].forEach(t => {
-                document.getElementById(`sec-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).classList.remove('text-amber-400', 'border-b-2', 'border-amber-400');
-                document.getElementById(`tab-${t}`).classList.add('text-slate-300');
-            });
-            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabId}`).classList.add('text-amber-400', 'border-b-2', 'border-amber-400');
-            document.getElementById(`tab-${tabId}`).classList.remove('text-slate-300');
-            document.getElementById('printable-area').classList.add('hidden');
-        }
-
-        function checkAdminLogin() {
-            const pass = document.getElementById('login-password').value;
-            const adminPass = localStorage.getItem('m3_pass') || '1234';
-            if (pass === adminPass) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('set-madrasah-name').value = madrasahName;
-                applyAdminUniversalLogo(); initAdminFirebaseSync();
-            } else { alert('Incorrect Password!'); }
-        }
-
-        function applyAdminUniversalLogo() { document.querySelectorAll('.universal-logo-target').forEach(img => img.src = universalLogo); }
-
-        function autoMigrateData(dataArray, dbRefPath, storageKey) {
-            let migrated = false;
-            dataArray.forEach(item => {
-                if (classMigrationMap[item.class]) { item.class = classMigrationMap[item.class]; migrated = true; }
-            });
-            if (migrated) {
-                try { localStorage.setItem(storageKey, JSON.stringify(dataArray)); } catch(e){}
-                const updates = {}; dataArray.forEach(item => { if(item.id) updates[item.id] = item; });
-                db.ref(dbRefPath).set(updates);
-            }
-        }
-
-        function initAdminFirebaseSync() {
-            db.ref('m3_settings/logo').on('value', snap => { if(snap.exists()) { universalLogo = snap.val(); applyAdminUniversalLogo(); }});
-            db.ref('m3_settings/name').on('value', snap => { if(snap.exists()) { madrasahName = snap.val(); document.getElementById('set-madrasah-name').value = madrasahName; }});
-            db.ref('m3_settings/classSubjects').on('value', snap => { 
-                if (snap.exists()) { classSubjectConfig = snap.val(); }
-                loadClassSubjectsAndRender();
-            });
+        function initFirebaseSync() {
+            db.ref('m3_settings/logo').on('value', snap => { if (snap.exists()) { universalLogo = snap.val(); applyUniversalLogo(); } });
+            db.ref('m3_settings/name').on('value', snap => { if (snap.exists()) { madrasahName = snap.val(); } });
+            db.ref('m3_settings/publishStatus').on('value', snap => { if (snap.exists()) resultPublishStatus = snap.val(); });
+            db.ref('m3_settings/publishDatetime').on('value', snap => { if (snap.exists()) resultPublishDatetime = snap.val(); });
+            
+            db.ref('m3_settings/classSubjects').on('value', snap => { if (snap.exists()) classSubjectConfig = snap.val(); });
             
             db.ref('m3_students').on('value', snap => {
-                if (snap.exists()) {
-                    registeredStudents = Object.values(snap.val());
-                    autoMigrateData(registeredStudents, 'm3_students', 'm3_db');
-                    try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(e){}
-                }
-                renderStudentDBTable();
+                if (snap.exists()) { registeredStudents = Object.values(snap.val()); localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); }
+                renderPublicStudentSearch();
             });
             db.ref('m3_results').on('value', snap => {
                 if (snap.exists()) {
                     const rawData = snap.val(); const uniqueMap = new Map();
                     Object.values(rawData).forEach(item => { if (item && item.id) uniqueMap.set(item.id + "_" + item.class, item); });
-                    excelStudents = Array.from(uniqueMap.values());
-                    autoMigrateData(excelStudents, 'm3_results', 'm3_results');
-                    try { localStorage.setItem('m3_results', JSON.stringify(excelStudents)); } catch(e){}
+                    excelStudents = Array.from(uniqueMap.values()); localStorage.setItem('m3_results', JSON.stringify(excelStudents));
                 }
-                renderExcelTable();
             });
         }
 
-        function compressImage(file, maxWidth = 250, maxHeight = 250, quality = 0.7) {
-            return new Promise((resolve) => {
-                const reader = new FileReader(); reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image(); img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height;
-                        if(w > h) { if(w > maxWidth) { h *= maxWidth/w; w = maxWidth; } } else { if(h > maxHeight) { w *= maxHeight/h; h = maxHeight; } }
-                        canvas.width = w; canvas.height = h;
-                        canvas.getContext('2d').drawImage(img, 0, 0, w, h); resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                };
-            });
+        function showPage(pageId) {
+            ['home','result','public-student-search'].forEach(p => { const el = document.getElementById(`page-${p}`); if(el) el.classList.add('hidden'); });
+            const activePage = document.getElementById(`page-${pageId}`); if(activePage) activePage.classList.remove('hidden'); window.scrollTo(0,0);
         }
 
-        // REGISTRATION
-        async function handleRegisterStudent(e) {
-            e.preventDefault();
-            const btn = document.getElementById('reg-submit-btn'); const origText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving...'; btn.disabled = true;
-
-            try {
-                const id = document.getElementById('reg-id').value.trim().toUpperCase();
-                const name = document.getElementById('reg-name').value.trim().toUpperCase();
-                const father = document.getElementById('reg-father').value.trim().toUpperCase();
-                const stdClass = document.getElementById('reg-class').value;
-                const phone = document.getElementById('reg-phone').value.trim() || 'N/A';
-                const status = document.getElementById('reg-status').value;
-
-                if (!id || !name) throw new Error("Missing ID or Name");
-                if (registeredStudents.some(s => s.id === id)) { alert(`ID '${id}' is already registered!`); btn.innerHTML = origText; btn.disabled = false; return; }
-
-                const newStudent = { id, name, father, class: stdClass, phone, status };
-                registeredStudents.unshift(newStudent);
-                try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(err){}
-                
-                renderStudentDBTable(); syncRegisteredStudentsToResults(false);
-                db.ref('m3_students/' + id).set(newStudent).catch(err => console.error(err));
-
-                document.getElementById('reg-name').value = ''; document.getElementById('reg-father').value = '';
-                document.getElementById('reg-id').value = ''; document.getElementById('reg-phone').value = '';
-                alert(`Student ${name} registered successfully!`);
-            } catch (error) { alert(error.message); }
-            btn.innerHTML = origText; btn.disabled = false;
+        function isResultAccessible() {
+            if (resultPublishStatus === 'UNPUBLISHED') return false;
+            if (resultPublishDatetime) { if (new Date().getTime() < new Date(resultPublishDatetime).getTime()) return false; }
+            return true;
         }
 
-        function renderStudentDBTable() {
-            const tbody = document.getElementById('student-db-table-body');
-            const q = document.getElementById('student-db-search') ? document.getElementById('student-db-search').value.toUpperCase().trim() : '';
-            const cSearch = document.getElementById('student-db-search-class') ? document.getElementById('student-db-search-class').value : 'ALL';
-            
-            if(!tbody) return; tbody.innerHTML = '';
-            document.getElementById('total-registered-badge').innerText = `Total: ${registeredStudents.length}`;
-
-            let filtered = registeredStudents;
-            if(cSearch !== 'ALL') filtered = filtered.filter(s => s.class === cSearch);
-            if(q) filtered = filtered.filter(s => s.id.includes(q) || s.name.includes(q) || s.phone.includes(q));
-
-            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500 font-bold">No students found.</td></tr>`; return; }
-
-            filtered.forEach((s, idx) => {
-                const realIdx = registeredStudents.indexOf(s);
-                const statusBadge = s.status === 'Deactivated' ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold text-[10px]">Inactive</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-[10px]">Active</span>';
-                tbody.innerHTML += `
-                    <tr class="border-b border-slate-200 hover:bg-slate-50">
-                        <td class="p-3 text-center font-bold text-slate-500">${idx + 1}</td>
-                        <td class="p-3 font-bold text-slate-800">${s.id}</td><td class="p-3 font-bold">${s.name}</td>
-                        <td class="p-3 text-slate-600">${s.father}</td><td class="p-3 font-bold text-slate-700">${s.class}</td>
-                        <td class="p-3 font-medium">${s.phone}</td><td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-center space-x-1 whitespace-nowrap">
-                            <button onclick="openStudentEditModal(${realIdx})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1.5 rounded text-[10px] shadow" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteStudent('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1.5 rounded text-[10px] shadow" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
+        function getSubjectGradeInfo(markVal, fullMark) {
+            if (markVal === undefined || markVal === null || String(markVal).trim() === '' || String(markVal).trim() === '-') return { lg: '-', gp: '-' };
+            const num = parseFloat(markVal); if (isNaN(num)) return { lg: '-', gp: '-' };
+            const percentage = parseInt(fullMark) === 50 ? (num * 2) : num;
+            if (percentage < 33) return { lg: 'F', gp: '0.0' };
+            if (percentage >= 80) return { lg: 'A+', gp: '5.0' }; if (percentage >= 70) return { lg: 'A', gp: '4.0' };
+            if (percentage >= 60) return { lg: 'A-', gp: '3.5' }; if (percentage >= 50) return { lg: 'B', gp: '3.0' };
+            if (percentage >= 40) return { lg: 'C', gp: '2.0' }; return { lg: 'D', gp: '1.0' };
         }
 
-        // ==========================================
-        // STUDENT EDIT MODAL SYSTEM
-        // ==========================================
-        function openStudentEditModal(realIdx) {
-            const s = registeredStudents[realIdx]; if(!s) return;
-            document.getElementById('edit-std-realindex').value = realIdx;
-            document.getElementById('edit-std-id').value = s.id;
-            document.getElementById('edit-std-name').value = s.name;
-            document.getElementById('edit-std-father').value = s.father || '';
-            document.getElementById('edit-std-phone').value = s.phone || '';
-            document.getElementById('student-edit-modal').classList.remove('hidden');
-        }
-        function closeStudentEditModal() { document.getElementById('student-edit-modal').classList.add('hidden'); }
-        
-        function saveEditedStudentData(e) {
-            e.preventDefault();
-            const realIdx = document.getElementById('edit-std-realindex').value;
-            const s = registeredStudents[realIdx]; if(!s) return;
-            
-            const updatedData = {
-                id: document.getElementById('edit-std-id').value.trim().toUpperCase(),
-                name: document.getElementById('edit-std-name').value.trim().toUpperCase(),
-                father: document.getElementById('edit-std-father').value.trim().toUpperCase(),
-                class: s.class, // Class is not editable here to prevent sync issues
-                phone: document.getElementById('edit-std-phone').value.trim(),
-                status: s.status || 'Active'
-            };
-            
-            registeredStudents[realIdx] = updatedData;
-            try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); } catch(err){}
-            renderStudentDBTable(); db.ref('m3_students/' + updatedData.id).set(updatedData);
-            
-            // Also update in Results
-            const resIdx = excelStudents.findIndex(ex => ex.id === updatedData.id);
-            if(resIdx !== -1) {
-                excelStudents[resIdx].name = updatedData.name;
-                try { localStorage.setItem('m3_results', JSON.stringify(excelStudents)); } catch(err){}
-                db.ref('m3_results/' + updatedData.id).set(excelStudents[resIdx]);
-            }
-            closeStudentEditModal(); alert('Student data updated successfully!');
-        }
-
-        // DEEP CLEAN DELETE FIX (Wipes from everywhere)
-        function deleteStudent(id) {
-            if(confirm('Are you sure you want to PERMANENTLY delete this student from everywhere?')) {
-                registeredStudents = registeredStudents.filter(s => s.id !== id);
-                excelStudents = excelStudents.filter(s => s.id !== id); 
-                try { localStorage.setItem('m3_db', JSON.stringify(registeredStudents)); localStorage.setItem('m3_results', JSON.stringify(excelStudents)); } catch(e){}
-                
-                renderStudentDBTable(); renderExcelTable();
-                db.ref('m3_students/' + id).remove(); db.ref('m3_results/' + id).remove();
-            }
-        }
-
-        // MARKS ENTRY & CALCULATION
         function calculateStudentResultStats(marksArray, configArray) {
-            let total = 0; let validCount = 0; let hasFail = false;
-            let mainPointsSum = 0; let mainSubjectCount = 0; let optionalBonusPoint = 0;
-
-            if (!marksArray || !Array.isArray(marksArray)) return { total: 0, grade: '-', gpa: '0.00', remarks: 'N/A' };
-
-            marksArray.forEach((m, idx) => {
+            let total = 0, mainSum = 0, mainCount = 0, bonus = 0, hasFail = false, anyMarkEntered = false;
+            const activeConfig = configArray || subjectConfig;
+            
+            (marksArray || []).forEach((m, idx) => {
                 if (m !== undefined && m !== null && String(m).trim() !== '' && String(m).trim() !== '-') {
                     const num = parseFloat(m);
                     if (!isNaN(num)) {
-                        total += num; validCount++;
-                        const fullMark = (configArray[idx] && configArray[idx].full) ? parseInt(configArray[idx].full) : 100;
-                        const percentage = fullMark === 50 ? (num * 2) : num;
-                        
+                        total += num; anyMarkEntered = true;
+                        const subject = activeConfig[idx] || { full: 100, type: 'Main' };
+                        const percentage = (num / (subject.full||100)) * 100;
                         let gp = 0;
                         if (percentage < 33) { hasFail = true; gp = 0; }
                         else if (percentage >= 80) gp = 5.0; else if (percentage >= 70) gp = 4.0;
                         else if (percentage >= 60) gp = 3.5; else if (percentage >= 50) gp = 3.0;
                         else if (percentage >= 40) gp = 2.0; else if (percentage >= 33) gp = 1.0;
 
-                        if (configArray[idx] && configArray[idx].type === 'Optional') {
-                            if (gp > 2.0) optionalBonusPoint += (gp - 2.0);
-                        } else { mainPointsSum += gp; mainSubjectCount++; }
+                        if (subject.type === 'Optional') { bonus += Math.max(0, gp - 2.0); } 
+                        else { mainSum += gp; mainCount++; }
                     }
                 }
             });
 
-            if (validCount === 0) return { total: 0, grade: '-', gpa: '0.00', remarks: 'Pending' };
-            if (hasFail || mainSubjectCount === 0) return { total: total, grade: 'F', gpa: '0.00', remarks: 'Failed' };
+            if (!anyMarkEntered) return { total: 0, grade: '-', gpa: '0.00', remarks: 'Pending' };
+            if (hasFail || mainCount === 0) return { total: total, grade: 'F', gpa: '0.00', remarks: 'Failed' };
 
-            let baseGpa = mainPointsSum / mainSubjectCount;
-            let finalGpaNum = baseGpa + (optionalBonusPoint / mainSubjectCount);
-            if (finalGpaNum > 5.0) finalGpaNum = 5.0;
+            let finalGpa = (mainSum / mainCount) + bonus;
+            if (finalGpa > 5.0) finalGpa = 5.0;
 
             let grade = 'A+'; let remarks = 'Outstanding';
-            if (finalGpaNum >= 5.0) { grade = 'A+'; remarks = 'Outstanding'; }
-            else if (finalGpaNum >= 4.0) { grade = 'A'; remarks = 'Excellent'; }
-            else if (finalGpaNum >= 3.5) { grade = 'A-'; remarks = 'Very Good'; }
-            else if (finalGpaNum >= 3.0) { grade = 'B'; remarks = 'Good'; }
-            else if (finalGpaNum >= 2.0) { grade = 'C'; remarks = 'Satisfactory'; }
-            else if (finalGpaNum >= 1.0) { grade = 'D'; remarks = 'Needs Improvement'; }
+            if (finalGpa >= 5.0) { grade = 'A+'; remarks = 'Outstanding'; }
+            else if (finalGpa >= 4.0) { grade = 'A'; remarks = 'Excellent'; }
+            else if (finalGpa >= 3.5) { grade = 'A-'; remarks = 'Very Good'; }
+            else if (finalGpa >= 3.0) { grade = 'B'; remarks = 'Good'; }
+            else if (finalGpa >= 2.0) { grade = 'C'; remarks = 'Satisfactory'; }
+            else if (finalGpa >= 1.0) { grade = 'D'; remarks = 'Needs Improvement'; }
             else { grade = 'F'; remarks = 'Failed'; }
 
-            return { total: total, grade: grade, gpa: finalGpaNum.toFixed(2), remarks: remarks };
+            return { total, grade, gpa: finalGpa.toFixed(2), remarks };
         }
 
-        function loadClassSubjectsAndRender() {
-            const cls = document.getElementById('admin-global-class').value;
-            if (classSubjectConfig[cls] && classSubjectConfig[cls].length > 0) {
-                currentClassSubjects = [...classSubjectConfig[cls]];
-            } else {
-                currentClassSubjects = [...subjectConfig]; // Default fallback
-            }
-            renderExcelTable();
-        }
+        function renderPublicStudentSearch() {
+            const q = document.getElementById('public-search-input') ? document.getElementById('public-search-input').value.toUpperCase().trim() : '';
+            const container = document.getElementById('public-student-results');
+            if(!container) return; container.innerHTML = ''; if(!q) return;
 
-        function syncRegisteredStudentsToResults(showAlert = true) {
-            registeredStudents.forEach(reg => {
-                const existing = excelStudents.find(s => s.id === reg.id);
-                // Assign correct subject length based on class
-                let clsConfig = classSubjectConfig[reg.class] ? classSubjectConfig[reg.class] : subjectConfig;
-                let targetLen = clsConfig.length;
-                
-                if (!existing) {
-                    excelStudents.push({ id: reg.id, name: reg.name, class: reg.class, session: '2026', exam: 'Annual Examination', marks: new Array(targetLen).fill('') });
-                } else { 
-                    existing.name = reg.name; 
-                    existing.class = reg.class; 
-                    if (!existing.marks) existing.marks = [];
-                    while(existing.marks.length < targetLen) existing.marks.push('');
-                }
-            });
-            renderExcelTable(); if(showAlert) alert('Synced Cadets to Results Board!');
-        }
+            const matches = registeredStudents.filter(s => s.id.includes(q) || s.name.includes(q));
+            if(matches.length === 0) { container.innerHTML = `<p class="col-span-2 text-center text-slate-500 font-bold text-xs py-4">কোনো শিক্ষার্থী ডাটা পাওয়া যায়নি।</p>`; return; }
 
-        function renderExcelTable() {
-            const cls = document.getElementById('admin-global-class').value;
-            const headerRow = document.getElementById('excel-header-row');
-            const tbody = document.getElementById('excel-table-body');
-            if(!headerRow || !tbody) return;
-            const currentStudents = excelStudents.filter(s => s.class === cls);
-            
-            // Sort by ID naturally
-            currentStudents.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
-
-            // Create precise subject config for this class if it doesn't exist
-            if (!classSubjectConfig[cls]) { classSubjectConfig[cls] = [...subjectConfig]; }
-            let activeConfig = classSubjectConfig[cls];
-
-            let headerHTML = `<th class="p-1 border border-slate-700 w-8 text-center">SL</th><th class="p-1 border border-slate-700 w-12 text-center">ID</th><th class="p-1 border border-slate-700 w-32">Name</th>`;
-            activeConfig.forEach((subObj, sIdx) => {
-                headerHTML += `<th class="p-1 border border-slate-700 bg-slate-700 text-center min-w-[70px] max-w-[90px]">
-                    <div class="space-y-1">
-                        <div class="flex justify-between gap-1"><input type="text" value="${subObj.name}" class="sub-header-input bg-slate-900 text-amber-300 font-bold p-1 rounded w-full border border-slate-600 text-center text-xs" data-idx="${sIdx}"><button onclick="removeSubjectColumn(${sIdx})" class="text-red-400 hover:text-red-200 font-bold px-0.5 text-xs">×</button></div>
-                        <div class="flex gap-1">
-                            <select onchange="updateSubjectFullMark(${sIdx}, this.value)" class="bg-slate-900 text-white font-bold p-0.5 rounded text-[9px] w-1/2 cursor-pointer border border-slate-600"><option value="100" ${subObj.full==100?'selected':''}>100 M</option><option value="50" ${subObj.full==50?'selected':''}>50 M</option></select>
-                            <select onchange="updateSubjectType(${sIdx}, this.value)" class="bg-slate-900 text-amber-100 font-bold p-0.5 rounded text-[9px] w-1/2 cursor-pointer border border-slate-600"><option value="Main" ${subObj.type === 'Main' ? 'selected' : ''}>Main</option><option value="Optional" ${subObj.type === 'Optional' ? 'selected' : ''}>Opt.</option></select>
-                        </div>
-                    </div></th>`;
-            });
-            headerHTML += `<th class="p-1 border border-slate-700 bg-amber-600 text-slate-950 text-center w-10">Total</th><th class="p-1 border border-slate-700 bg-amber-600 text-slate-950 text-center w-10">GPA</th><th class="p-1 border border-slate-700 text-center w-8 bg-red-800">Del</th>`;
-            headerRow.innerHTML = headerHTML; tbody.innerHTML = '';
-
-            if (currentStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="${5 + activeConfig.length}" class="p-4 text-center font-bold text-gray-500">No students found in ${cls}. Sync first.</td></tr>`; return; }
-
-            currentStudents.forEach((s, idx) => {
-                const realIndex = excelStudents.indexOf(s);
-                const stats = calculateStudentResultStats(s.marks || [], activeConfig);
-                let rowHTML = `<tr class="border-b border-gray-300 hover:bg-slate-100"><td class="p-0 border border-gray-300 text-center font-bold text-slate-700">${idx+1}</td><td class="p-0 border border-gray-300"><input type="text" value="${s.id}" readonly class="ex-id w-full p-1 font-bold text-center bg-transparent uppercase text-slate-950"></td><td class="p-0 border border-gray-300"><input type="text" value="${s.name}" readonly class="ex-name w-full p-1 font-bold bg-transparent uppercase"></td>`;
-                activeConfig.forEach((_, sIdx) => {
-                    const markVal = (s.marks && s.marks[sIdx] !== undefined) ? s.marks[sIdx] : '';
-                    // ENTER KEY EVENT ADDED
-                    rowHTML += `<td class="p-0 border border-gray-300"><input type="text" value="${markVal}" onkeydown="handleEnterNavigation(event, ${sIdx}, ${idx})" class="ex-mark sub-mark-${sIdx} row-idx-${idx} w-full p-1.5 text-center font-bold text-slate-900 bg-transparent focus:bg-amber-50 focus:outline-none"></td>`;
-                });
-                rowHTML += `<td class="p-1 border border-gray-300 text-center font-black text-amber-700 bg-amber-50">${stats.total}</td><td class="p-1 border border-gray-300 text-center font-black text-slate-900 bg-slate-100">${stats.gpa}</td><td class="p-1 border border-gray-300 text-center"><button onclick="deleteExcelRow(${realIndex})" class="text-red-600 hover:text-red-800 font-bold p-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-                tbody.innerHTML += rowHTML;
-            });
-        }
-
-        // NAVIGATION LOGIC FOR ENTER KEY
-        function handleEnterNavigation(e, colIdx, rowIdx) {
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                e.preventDefault(); 
-                const nextRowInput = document.querySelector(`.sub-mark-${colIdx}.row-idx-${rowIdx + 1}`);
-                if (nextRowInput) { nextRowInput.focus(); nextRowInput.select(); }
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault(); 
-                const prevRowInput = document.querySelector(`.sub-mark-${colIdx}.row-idx-${rowIdx - 1}`);
-                if (prevRowInput) { prevRowInput.focus(); prevRowInput.select(); }
-            }
-        }
-
-        // ISOLATED CLASS SAVE
-        function updateSubjectFullMark(sIdx, newFull) { 
-            const cls = document.getElementById('admin-global-class').value; 
-            classSubjectConfig[cls][sIdx].full = parseInt(newFull); 
-            db.ref('m3_settings/classSubjects').set(classSubjectConfig); 
-            renderExcelTable(); 
-        }
-        function updateSubjectType(sIdx, newType) { 
-            const cls = document.getElementById('admin-global-class').value; 
-            classSubjectConfig[cls][sIdx].type = newType; 
-            db.ref('m3_settings/classSubjects').set(classSubjectConfig); 
-            renderExcelTable(); 
-        }
-        function addSubjectColumn() { 
-            const cls = document.getElementById('admin-global-class').value;
-            saveExcelData(false); 
-            classSubjectConfig[cls].push({ name: `Subject ${classSubjectConfig[cls].length + 1}`, full: 100, type: 'Main' }); 
-            
-            excelStudents.forEach(s => { 
-                if(s.class === cls) { 
-                    if(!s.marks) s.marks = []; 
-                    s.marks.push(''); 
-                } 
-            }); 
-            
-            db.ref('m3_settings/classSubjects').set(classSubjectConfig); 
-            const updates = {}; excelStudents.forEach(item => { if(item.id) updates[item.id] = item; }); 
-            db.ref('m3_results').set(updates); 
-            renderExcelTable(); 
-        }
-        function removeSubjectColumn(subIdx) {
-            const cls = document.getElementById('admin-global-class').value;
-            if(classSubjectConfig[cls].length <= 1) { alert('Minimum 1 subject required!'); return; }
-            if(confirm(`Delete "${classSubjectConfig[cls][subIdx].name}" from ${cls}?`)) {
-                saveExcelData(false); 
-                classSubjectConfig[cls].splice(subIdx, 1);
-                excelStudents.forEach(s => { if(s.class === cls && s.marks) s.marks.splice(subIdx, 1); });
-                
-                db.ref('m3_settings/classSubjects').set(classSubjectConfig); 
-                const updates = {}; excelStudents.forEach(item => { if(item.id) updates[item.id] = item; }); 
-                db.ref('m3_results').set(updates); 
-                renderExcelTable();
-            }
-        }
-
-        function deleteExcelRow(realIdx) {
-            if (confirm('Delete this result row? (Remember to delete from "Students" tab too, or they will sync back!)')) {
-                const removedStudent = excelStudents.splice(realIdx, 1)[0];
-                try{ localStorage.setItem('m3_results', JSON.stringify(excelStudents)); }catch(e){}
-                
-                const updates = {}; excelStudents.forEach(item => { if(item.id) updates[item.id] = item; });
-                db.ref('m3_results').set(updates).then(() => {
-                    renderExcelTable();
-                });
-            }
-        }
-
-        function saveExcelData(showAlert = true) {
-            const cls = document.getElementById('admin-global-class').value;
-            const exm = document.getElementById('admin-global-exam').value;
-            const ses = document.getElementById('admin-global-session').value;
-            
-            document.querySelectorAll('.sub-header-input').forEach((input, i) => { if(classSubjectConfig[cls][i]) classSubjectConfig[cls][i].name = input.value.trim(); });
-            db.ref('m3_settings/classSubjects').set(classSubjectConfig);
-
-            const otherClassStudents = excelStudents.filter(s => s.class !== cls);
-            const updatedCurrent = [];
-            
-            document.querySelectorAll('#excel-table-body tr.spreadsheet-row').forEach(row => {
-                const idInput = row.querySelector('.ex-id'); if(!idInput) return;
-                const id = idInput.value; const name = row.querySelector('.ex-name').value;
-                const marks = [];
-                classSubjectConfig[cls].forEach((_, sIdx) => { const mk = row.querySelector(`.sub-mark-${sIdx}`); marks.push(mk ? mk.value.trim() : ''); });
-                updatedCurrent.push({ id, name, class: cls, session: ses, exam: exm, marks });
-            });
-            
-            excelStudents = [...otherClassStudents, ...updatedCurrent];
-            try{ localStorage.setItem('m3_results', JSON.stringify(excelStudents)); }catch(e){}
-            
-            const updates = {}; excelStudents.forEach(item => { if(item.id) updates[item.id] = item; });
-            db.ref('m3_results').set(updates).then(() => {
-                renderExcelTable(); 
-                if(showAlert) alert(`${cls} Results Saved Successfully! Ghost data cleaned.`);
-            });
-        }
-
-        // ==========================================
-        // ATTENDANCE SHEET GENERATION 
-        // ==========================================
-        function generateAttendanceSheet() {
-            const cls = document.getElementById('attendance-class').value;
-            const month = document.getElementById('attendance-month').value.trim();
-            const printArea = document.getElementById('printable-area');
-
-            if(!cls || !month) { alert('Please enter Month Name and select Class!'); return; }
-
-            let filtered = registeredStudents.filter(s => s.class === cls);
-            if(filtered.length === 0) { alert('No students found in this class!'); return; }
-
-            filtered.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
-
-            let daysHtml = '';
-            for(let i=1; i<=31; i++) { daysHtml += `<th class="border border-slate-600 p-1 text-center w-[20px] bg-slate-100">${i}</th>`; }
-
-            let rowsHtml = '';
-            filtered.forEach((s, idx) => {
-                let emptyCells = '';
-                for(let i=1; i<=31; i++) { emptyCells += `<td class="border border-slate-400 p-1 text-center"></td>`; }
-                rowsHtml += `
-                    <tr class="text-[9px] md:text-[10px] text-slate-900 h-6">
-                        <td class="border border-slate-400 p-1 text-center font-bold">${idx+1}</td>
-                        <td class="border border-slate-400 p-1 text-center font-bold">${s.id}</td>
-                        <td class="border border-slate-400 p-1 font-bold whitespace-nowrap overflow-hidden">${s.name}</td>
-                        <td class="border border-slate-400 p-1 whitespace-nowrap overflow-hidden">${s.father || ''}</td>
-                        ${emptyCells}
-                    </tr>
-                `;
-            });
-
-            const sheetHTML = `
-                <div id="target-attendance-a4-node" class="attendance-sheet-wrapper">
-                    <div class="attendance-sheet-content bg-white">
-                        <div class="flex items-center justify-between border-b-2 border-slate-800 pb-3 mb-4">
-                            <img src="${universalLogo}" class="w-16 h-16 object-contain">
-                            <div class="text-center flex-grow">
-                                <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest">${document.getElementById('set-madrasah-name').value}</h1>
-                                <h2 class="text-base font-bold text-amber-700 mt-1 uppercase tracking-wide">Monthly Student Attendance Register</h2>
-                            </div>
-                            <div class="text-right text-sm font-bold text-slate-800 space-y-1">
-                                <p>Class: <span class="text-amber-700 uppercase">${cls}</span></p>
-                                <p>Month: <span class="text-amber-700 border-b border-dashed border-slate-500 pb-0.5">${month}</span></p>
-                            </div>
-                        </div>
-                        <table class="w-full border-collapse border-2 border-slate-800">
-                            <thead>
-                                <tr class="bg-slate-800 text-[10px] text-white uppercase tracking-wide">
-                                    <th class="border border-slate-700 p-1 w-6 text-center">SL</th>
-                                    <th class="border border-slate-700 p-1 w-14 text-center">ID</th>
-                                    <th class="border border-slate-700 p-1 text-left w-36">Student Name</th>
-                                    <th class="border border-slate-700 p-1 text-left w-36">Father's Name</th>
-                                    ${daysHtml}
-                                </tr>
-                            </thead>
-                            <tbody>${rowsHtml}</tbody>
-                        </table>
-                        <div class="mt-auto pt-8 pb-2 flex justify-between text-xs font-bold text-slate-900">
-                            <div class="text-center"><div class="w-40 border-t-2 border-slate-700 mb-1"></div><span>Class Teacher Signature</span></div>
-                            <div class="text-center"><div class="w-40 border-t-2 border-slate-700 mb-1"></div><span>Principal Signature</span></div>
+            matches.forEach(s => {
+                const statusBadge = s.status === 'Deactivated' ? '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fa-solid fa-circle-xmark mr-1"></i>Deactivated</span>' : '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs"><i class="fa-solid fa-circle-check mr-1"></i>Active</span>';
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex items-center gap-4 shadow-sm">
+                        <img src="${s.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="w-16 h-16 rounded-full object-cover border-2 border-slate-400">
+                        <div class="space-y-1 text-xs">
+                            <h4 class="font-bold text-sm text-slate-900">${s.name}</h4>
+                            <p class="text-slate-600"><b>Student ID:</b> ${s.id}</p>
+                            <p class="text-slate-600"><b>Class:</b> ${s.class}</p>
+                            <p class="text-slate-600"><b>Father's Name:</b> ${s.father || '-'}</p>
+                            <div class="pt-1">${statusBadge}</div>
                         </div>
                     </div>
-                </div>
-            `;
-
-            printArea.innerHTML = sheetHTML + `<div class="mt-4 no-print max-w-xl mx-auto"><button onclick="executeIsolatedPrint('target-attendance-a4-node', 'landscape')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 px-8 rounded-xl w-full shadow-lg transition"><i class="fa-solid fa-print mr-2"></i> Print Attendance Sheet</button></div>`;
-            printArea.classList.remove('hidden');
-            printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                `;
+            });
         }
 
-
-        // PRINT RESULTS
         function toggleResultTab(tab) {
             if(tab === 'personal') {
                 document.getElementById('result-view-personal').classList.remove('hidden'); document.getElementById('result-view-class').classList.add('hidden');
@@ -878,17 +360,209 @@
             }
         }
 
+        // ===============================================
+        // PREMIUM MARKSHEET GENERATOR FOR INDEX.HTML
+        // ===============================================
+        function searchResult() {
+            const id = document.getElementById('search-student-id').value.trim().toUpperCase();
+            const cls = document.getElementById('search-student-class').value;
+            const ses = document.getElementById('search-student-session').value;
+            const exm = document.getElementById('search-student-exam').value;
+            const printArea = document.getElementById('printable-area');
+
+            if (!id) { alert('Please enter Student ID!'); return; }
+
+            if(!isResultAccessible()) {
+                const timeText = resultPublishDatetime ? `<br><span class="text-xs font-normal">Official Release Schedule: ${new Date(resultPublishDatetime).toLocaleString('en-US')}</span>` : '';
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<div class="bg-amber-100 p-6 rounded-2xl border-2 border-amber-300 text-amber-950 text-center font-bold text-sm shadow-xl max-w-xl mx-auto my-4"><i class="fa-solid fa-clock text-amber-600 text-3xl mb-2 block"></i>Official Results for this examination have not been published yet.${timeText}</div>`;
+                return;
+            }
+
+            let student = excelStudents.find(s => s.id.toUpperCase() === id && s.class === cls && s.session === ses && s.exam === exm);
+            const regS = registeredStudents.find(r => r.id === id);
+
+            if (!student && regS) student = { id: regS.id, name: regS.name, class: regS.class, session: ses, exam: exm, marks: [] };
+            if (!student) {
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<div class="bg-white p-6 rounded-2xl text-red-600 text-center font-bold text-sm shadow-xl border border-red-200 max-w-xl mx-auto my-4"><i class="fa-solid fa-circle-exclamation text-2xl text-red-500 mb-2 block"></i>Transcript Not Found! Please verify Student ID, Class, and Session.</div>`;
+                return;
+            }
+
+            let currentConfig = classSubjectConfig[cls];
+            if (!currentConfig || currentConfig.length === 0) { currentConfig = subjectConfig; }
+
+            const studentFather = (regS && regS.father) ? regS.father : 'N/A';
+            
+            // Filter out blank subjects
+            let validSubjects = [];
+            currentConfig.forEach((subObj, sIdx) => {
+                const markVal = (student.marks && student.marks[sIdx] !== undefined) ? String(student.marks[sIdx]).trim() : '';
+                if (markVal !== '' && markVal !== '-') {
+                    validSubjects.push({ subObj: subObj, mark: markVal });
+                }
+            });
+
+            const subjectCount = validSubjects.length;
+            const rowPadClass =
+                subjectCount <= 6  ? 'py-4 px-4 text-lg md:text-xl font-bold' :
+                subjectCount <= 8  ? 'py-3 px-3 text-base md:text-lg font-bold' :
+                subjectCount <= 10 ? 'py-2 px-3 text-sm md:text-base font-bold' :
+                subjectCount <= 13 ? 'py-1.5 px-2 text-xs md:text-sm font-bold' :
+                                     'py-1 px-1.5 text-[11px] md:text-xs font-bold';
+
+            let subjectRowsHTML = '';
+            if (subjectCount === 0) {
+                subjectRowsHTML = `<tr><td colspan="5" class="py-6 text-center font-bold text-gray-500">No subject marks recorded.</td></tr>`;
+            } else {
+                validSubjects.forEach(item => {
+                    const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
+                    const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
+                    subjectRowsHTML += `
+                        <tr class="border-b border-gray-300 bg-transparent">
+                            <td class="${rowPadClass} border-r border-gray-300 text-gray-900">${item.subObj.name}${typeLabel}</td>
+                            <td class="${rowPadClass} text-center text-gray-700 w-24 border-r border-gray-300">${item.subObj.full}</td>
+                            <td class="${rowPadClass} text-center text-emerald-950 w-28 border-r border-gray-300">${item.mark}</td>
+                            <td class="${rowPadClass} text-center text-emerald-900 w-20 border-r border-gray-300 font-montserrat">${gradeInfo.lg}</td>
+                            <td class="${rowPadClass} text-center text-emerald-900 w-20 font-montserrat">${gradeInfo.gp}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const stats = calculateStudentResultStats(student.marks || [], currentConfig);
+            const currentDateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            const resultHTML = `
+                <div id="pdf-export-container" class="a4-print-wrapper mt-4">
+                    <div id="target-transcript-a4-node" class="islamic-a4-sheet font-serif-roman text-left bg-white">
+                        <div class="blue-inner-border">
+                            <img src="${universalLogo}" class="marksheet-large-watermark" alt="Watermark">
+
+                            <div class="relative z-10 w-full flex-grow flex flex-col justify-start">
+                                
+                                <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
+                                    <div class="flex items-center gap-4 w-4/5 text-left">
+                                        <div class="shrink-0">
+                                            <img src="${universalLogo}" alt="Logo" class="w-20 h-20 object-contain p-1 border-[3px] border-amber-500 rounded-full shadow-md bg-white">
+                                        </div>
+                                        <div>
+                                            <h2 class="arabic-calligraphy text-xl text-slate-800 mb-0.5">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
+                                            <h1 class="font-brand text-[23px] font-black text-slate-950 tracking-wider uppercase whitespace-nowrap">${madrasahName}</h1>
+                                            <p class="text-[11.5px] text-slate-600 font-bold mt-0.5 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTGONG.</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-1/5 text-right flex flex-col items-end justify-center space-y-1.5 pt-1">
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-14 h-14 border border-slate-300 rounded p-1 opacity-90 shadow-sm">
+                                        <p class="font-montserrat text-[8px] font-black text-slate-700 tracking-widest">VERIFIED</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col items-center justify-center space-y-2.5 mb-5 relative z-10">
+                                    <div class="bg-amber-100 border border-amber-300 text-amber-900 px-6 py-1.5 rounded-full font-bold text-[11px] uppercase tracking-widest shadow-sm font-montserrat">
+                                        ${student.exam || 'ANNUAL EXAMINATION'}
+                                    </div>
+                                    <div class="bg-slate-800 text-amber-400 px-8 py-2 rounded-lg font-black text-[13px] uppercase tracking-widest shadow-md font-montserrat border-b-4 border-slate-950">
+                                        ACADEMIC TRANSCRIPT
+                                    </div>
+                                </div>
+
+                                <div class="student-info-grid mb-4">
+                                    <div class="info-item"><span class="label">STUDENT ID</span><span class="value">: ${student.id}</span></div>
+                                    <div class="info-item"><span class="label">CLASS</span><span class="value">: ${student.class}</span></div>
+                                    <div class="info-item"><span class="label">STUDENT NAME</span><span class="value">: ${student.name}</span></div>
+                                    <div class="info-item"><span class="label">SESSION</span><span class="value">: ${student.session || '2026'}</span></div>
+                                    <div class="info-item col-span-2"><span class="label">FATHER'S NAME</span><span class="value">: ${studentFather}</span></div>
+                                </div>
+
+                                <div class="mt-1 flex-grow">
+                                    <table class="w-full border-collapse border-2 border-slate-900 rounded-lg overflow-hidden bg-white shadow-sm">
+                                        <thead>
+                                            <tr class="bg-slate-900 text-amber-400 uppercase text-sm md:text-base font-montserrat tracking-wide">
+                                                <th class="py-2.5 px-4 text-left border-r border-slate-700">Course / Subject Title</th>
+                                                <th class="py-2.5 px-2 text-center w-24 border-r border-slate-700">Full Marks</th>
+                                                <th class="py-2.5 px-2 text-center w-28 border-r border-slate-700">Obtained</th>
+                                                <th class="py-2.5 px-2 text-center w-20 border-r border-slate-700">Grade</th>
+                                                <th class="py-2.5 px-2 text-center w-20">GP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>${subjectRowsHTML}</tbody>
+                                    </table>
+                                </div>
+
+                                <div class="border-[3px] border-slate-800 p-4 rounded-xl flex justify-between items-center text-sm font-bold text-slate-950 mt-4 bg-slate-50 relative z-10 shadow-sm">
+                                    <div class="text-center px-4">
+                                        <span class="text-slate-700 block text-[10px] uppercase font-montserrat tracking-wide mb-1">Total Marks</span>
+                                        <span class="text-3xl text-amber-700 font-black">${stats.total}</span>
+                                    </div>
+                                    <div class="text-center border-x-2 border-slate-300 px-8">
+                                        <span class="text-slate-700 block text-[10px] uppercase font-montserrat tracking-wide mb-1">GPA</span>
+                                        <span class="text-3xl text-slate-900 font-black">${stats.gpa}</span>
+                                    </div>
+                                    <div class="text-center border-r-2 border-slate-300 pr-8">
+                                        <span class="text-slate-700 block text-[10px] uppercase font-montserrat tracking-wide mb-1">Letter Grade</span>
+                                        <span class="text-3xl text-slate-900 font-black">${stats.grade}</span>
+                                    </div>
+                                    <div class="text-right px-4">
+                                        <span class="text-slate-700 block text-[10px] uppercase font-montserrat tracking-wide mb-1">Remarks</span>
+                                        <span class="text-xl text-slate-900 font-black uppercase">${stats.remarks}</span>
+                                    </div>
+                                </div>
+
+                                <div class="pt-12 pb-2 flex justify-between items-end text-xs text-slate-900 font-bold relative z-10 mt-auto px-4">
+                                    <div class="text-center">
+                                        <div class="w-32 border-t-[2px] border-slate-800 mb-1.5"></div>
+                                        <span class="font-montserrat text-[11px] uppercase tracking-wide">Guardian Signature</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-24 h-24 rounded-full border-2 border-dashed border-slate-400 flex items-center justify-center mb-2 mx-auto text-slate-500 opacity-60">
+                                            <span class="text-[12px] uppercase font-bold text-center">Official<br>Seal</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-32 border-t-[2.5px] border-slate-950 mb-1.5"></div>
+                                        <span class="text-slate-950 font-black font-montserrat text-[11px] uppercase tracking-widest">Principal / Controller</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            printArea.classList.remove('hidden');
+            printArea.innerHTML = resultHTML + `
+                <div class="mt-6 no-print max-w-xl mx-auto flex flex-wrap gap-4 justify-center">
+                    <button onclick="executeIsolatedPrint('target-transcript-a4-node', 'portrait')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
+                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
+                </div>
+            `;
+            printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // TABULATION SHEET
         function showClassResultSheet() {
             const cls = document.getElementById('class-result-dropdown').value;
             const ses = document.getElementById('class-session-dropdown').value;
             const exm = document.getElementById('class-exam-dropdown').value;
             const printArea = document.getElementById('printable-area');
+
             if(!cls) { alert('Select Class!'); return; }
+            
+            if(!isResultAccessible()) {
+                const timeText = resultPublishDatetime ? `<br><span class="text-xs font-normal">Official Release Schedule: ${new Date(resultPublishDatetime).toLocaleString('en-US')}</span>` : '';
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<div class="bg-amber-100 p-6 rounded-2xl border-2 border-amber-300 text-amber-950 text-center font-bold text-sm shadow-xl max-w-xl mx-auto my-4"><i class="fa-solid fa-clock text-amber-600 text-3xl mb-2 block"></i>Official Results for this examination have not been published yet.${timeText}</div>`;
+                return;
+            }
 
             const filtered = excelStudents.filter(s => s.class === cls && s.session === ses && s.exam === exm);
-            if(filtered.length === 0) { alert('No results found for this selection.'); return; }
+            if(filtered.length === 0) { 
+                printArea.classList.remove('hidden');
+                printArea.innerHTML = `<p class="text-red-600 text-center font-bold text-sm py-6 bg-red-50 rounded-xl border border-red-200 mt-4 max-w-xl mx-auto">No results found for this selection.</p>`; 
+                return; 
+            }
 
-            // SORT Tabulation
             filtered.sort((a,b) => parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, '')));
 
             let currentConfig = classSubjectConfig[cls] || subjectConfig;
@@ -913,22 +587,31 @@
             });
 
             const sheetHTML = `
-                <div id="target-tabulation-a4-node" class="bg-white rounded-xl border-4 border-slate-800 overflow-hidden font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
-                    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
-                        <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-xl border-2 border-amber-400 shadow-md shrink-0">
-                        <div class="text-center flex-grow">
-                            <h2 class="font-brand text-xl md:text-2xl font-black tracking-widest uppercase">${document.getElementById('set-madrasah-name').value}</h2>
+                <div id="target-tabulation-a4-node" class="bg-slate-900 p-2 shadow-lg font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
+                    <div class="bg-white border-2 border-amber-500 rounded-xl p-6 h-full flex flex-col">
+                        <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
+                            <div class="flex items-center gap-4 text-left">
+                                <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-500 shadow-md shrink-0">
+                                <div>
+                                    <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest whitespace-nowrap">${madrasahName}</h1>
+                                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">MOHORA, CHANDGAON, CHITTGONG.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="bg-slate-900 text-amber-400 px-4 py-1.5 rounded-lg font-black text-[11px] uppercase tracking-wider shadow-md border-b-4 border-slate-950 inline-block">
+                                    Tabulation Sheet
+                                </div>
+                            </div>
                         </div>
-                        <span class="inline-block bg-amber-500 text-slate-900 px-3 py-1 rounded-lg font-black text-[11px] uppercase tracking-wide shrink-0 whitespace-nowrap">Tabulation Sheet</span>
-                    </div>
-                    <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800">
-                        <span>${exm}</span>
-                        <span>Class: <span class="text-amber-700">${cls}</span></span>
-                        <span>Session: <span class="text-amber-700">${ses}</span></span>
-                        <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
-                    </div>
-                    <div class="p-2 flex-grow">
-                        <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800 mb-2">
+                            <span>${exm}</span>
+                            <span>Class: <span class="text-amber-700">${cls}</span></span>
+                            <span>Session: <span class="text-amber-700">${ses}</span></span>
+                            <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
+                        </div>
+                        <div class="p-2 flex-grow">
+                            <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        </div>
                     </div>
                 </div>
             `;
@@ -998,7 +681,12 @@
                 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Amiri:wght@700&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
                 <script src="https://cdn.tailwindcss.com"><\/script>
                 ${styles}
-                <style>${pageCss} html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; } .no-print { display: none !important; } * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }</style>
+                <style>
+                    ${pageCss}
+                    html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
+                    .no-print { display: none !important; }
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+                </style>
                 </head><body><div class="print-safe-wrap">${targetElement.outerHTML}</div></body></html>
             `);
             frameDoc.close();
@@ -1009,33 +697,8 @@
             }, 1200);
         }
 
-        function saveSettings() {
-            const name = document.getElementById('set-madrasah-name').value;
-            db.ref('m3_settings/name').set(name); localStorage.setItem('m3_name', name);
-            const fileInput = document.getElementById('universal-logo-file');
-            if (fileInput.files && fileInput.files[0]) {
-                compressImage(fileInput.files[0], 250, 250).then(b64 => {
-                    db.ref('m3_settings/logo').set(b64); localStorage.setItem('m3_logo', b64);
-                    alert('Settings & Logo Saved!'); applyAdminUniversalLogo();
-                });
-            } else { alert('Madrasah Name Saved!'); }
-        }
-        function changeAdminPassword() {
-            const newPass = document.getElementById('new-admin-pass').value.trim();
-            if(newPass) { localStorage.setItem('m3_pass', newPass); alert('Password Updated!'); }
-        }
-        function clearAllSystemStorageWithPassword() {
-            const pass = prompt('Enter Admin Password to WIPE ALL CLOUD DATA:');
-            if (pass === (localStorage.getItem('m3_pass') || '1234')) {
-                db.ref('m3_students').remove(); db.ref('m3_results').remove();
-                registeredStudents = []; excelStudents = [];
-                localStorage.removeItem('m3_db'); localStorage.removeItem('m3_results');
-                renderStudentDBTable(); renderExcelTable(); alert('All data wiped!');
-            }
-        }
-
         window.onload = function() {
-            // Keep on login screen
+            initFirebaseSync();
         };
     </script>
 </body>
