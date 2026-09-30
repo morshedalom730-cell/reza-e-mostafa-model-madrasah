@@ -18,26 +18,25 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.5; }
         
-        /* PREMIUM A4 MARKSHEET SYSTEM - NEW BORDER */
+        /* PREMIUM A4 MARKSHEET SYSTEM */
         .a4-print-wrapper {
             width: 794px; height: 1123px; background-color: #ffffff; margin: 0 auto;
             position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
         .islamic-a4-sheet {
             width: 794px; min-height: 1123px; background: #ffffff;
-            border: 14px solid #1e3a8a; /* Deep Royal Blue Outer */
-            padding: 8px; box-sizing: border-box;
+            border: 12px solid #0f172a; 
+            padding: 6px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between; transform-origin: top center;
         }
         .blue-inner-border {
-            border: 3px double #d97706; /* Golden Double Inner */
-            border-radius: 8px;
-            width: 100%; height: 100%; flex-grow: 1; padding: 25px 30px; box-sizing: border-box; 
+            border: 2px solid #d97706; outline: 1px solid #d97706; outline-offset: 3px;
+            width: 100%; height: 100%; flex-grow: 1; padding: 30px; box-sizing: border-box; 
             display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
         }
         .marksheet-large-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 480px; height: 480px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
+            width: 480px; height: 480px; opacity: 0.05; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
         }
 
         .student-info-grid {
@@ -63,7 +62,7 @@
 
     <div class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print border-b-2 border-amber-500">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center py-3.5">
-            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA D. MODEL MADRASA</h1>
+            <h1 class="font-bold text-base md:text-lg text-amber-400 font-brand tracking-wider">REZA-E MUSTAFA SM. MODEL MADRASA</h1>
             <div class="flex items-center gap-5 text-xs font-bold overflow-x-auto">
                 <button onclick="showPage('home')" class="hover:text-amber-400 pb-1 text-slate-300">Home</button>
                 <button onclick="showPage('result')" class="hover:text-amber-400 pb-1 text-slate-300">Results</button>
@@ -246,7 +245,6 @@
             db.ref('m3_settings/logo').on('value', snap => { if (snap.exists()) { universalLogo = snap.val(); applyUniversalLogo(); } });
             db.ref('m3_settings/publishStatus').on('value', snap => { if (snap.exists()) resultPublishStatus = snap.val(); });
             db.ref('m3_settings/publishDatetime').on('value', snap => { if (snap.exists()) resultPublishDatetime = snap.val(); });
-            
             db.ref('m3_settings/classSubjects').on('value', snap => { if (snap.exists()) classSubjectConfig = snap.val(); });
             
             db.ref('m3_students').on('value', snap => {
@@ -420,9 +418,9 @@
                     const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
                     const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
                     subjectRowsHTML += `
-                        <tr class="border-b border-gray-300 bg-transparent">
-                            <td class="${rowPadClass} border-r border-gray-300 text-gray-900">${item.subObj.name}${typeLabel}</td>
-                            <td class="${rowPadClass} text-center text-gray-700 w-24 border-r border-gray-300">${item.subObj.full}</td>
+                        <tr class="border-b border-gray-300 bg-transparent hover:bg-slate-50">
+                            <td class="${rowPadClass} border-r border-gray-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
+                            <td class="${rowPadClass} text-center text-slate-700 w-24 border-r border-gray-300">${item.subObj.full}</td>
                             <td class="${rowPadClass} text-center text-slate-950 w-28 border-r border-gray-300">${item.mark}</td>
                             <td class="${rowPadClass} text-center text-slate-900 w-20 border-r border-gray-300 font-montserrat">${gradeInfo.lg}</td>
                             <td class="${rowPadClass} text-center text-slate-900 w-20 font-montserrat">${gradeInfo.gp}</td>
@@ -442,19 +440,23 @@
 
                             <div class="relative z-10 w-full flex-grow flex flex-col justify-start">
                                 
-                                <!-- PREMIUM HEADER (UPDATED AS REQUESTED) -->
-                                <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
-                                    <div class="flex items-center gap-4 w-4/5 text-left">
+                                <!-- BISMILLAH CENTERED -->
+                                <div class="text-center mb-2">
+                                    <h2 class="arabic-calligraphy text-2xl text-slate-800">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
+                                </div>
+                                
+                                <!-- PREMIUM HEADER -->
+                                <div class="flex items-center justify-between border-b-2 border-slate-300 pb-3 mb-4">
+                                    <div class="flex items-center gap-4 text-left">
                                         <div class="shrink-0">
                                             <img src="${universalLogo}" alt="Logo" class="w-20 h-20 object-contain p-1 border-[3px] border-amber-500 rounded-full shadow-md bg-white">
                                         </div>
                                         <div>
-                                            <h2 class="arabic-calligraphy text-xl text-slate-800 mb-0.5">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
                                             <h1 class="font-brand text-[23px] font-black text-slate-950 tracking-wider uppercase whitespace-nowrap">${madrasahName}</h1>
                                             <p class="text-[11.5px] text-slate-600 font-bold mt-0.5 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTGONG.</p>
                                         </div>
                                     </div>
-                                    <div class="w-1/5 text-right flex flex-col items-end justify-center space-y-1.5 pt-1">
+                                    <div class="text-right flex flex-col items-end justify-center space-y-1.5 pt-1">
                                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-14 h-14 border border-slate-300 rounded p-1 opacity-90 shadow-sm">
                                         <p class="font-montserrat text-[8px] font-black text-slate-700 tracking-widest">VERIFIED</p>
                                     </div>
@@ -515,20 +517,15 @@
                                     </div>
                                 </div>
 
-                                <!-- PREMIUM SIGNATURES -->
-                                <div class="pt-12 pb-2 flex justify-between items-end text-xs text-slate-900 font-bold relative z-10 mt-auto px-4">
+                                <!-- PREMIUM SIGNATURES (Only 2 sides) -->
+                                <div class="pt-12 pb-2 flex justify-between items-end text-xs text-slate-900 font-bold relative z-10 mt-auto px-8">
                                     <div class="text-center">
-                                        <div class="w-32 border-t-[2px] border-slate-800 mb-1.5"></div>
-                                        <span class="font-montserrat text-[11px] uppercase tracking-wide">Guardian Signature</span>
+                                        <div class="w-40 border-t-[2px] border-slate-800 mb-1.5"></div>
+                                        <span class="font-montserrat text-[12px] uppercase tracking-wide">Guardian Signature</span>
                                     </div>
                                     <div class="text-center">
-                                        <div class="w-24 h-24 rounded-full border-2 border-dashed border-slate-400 flex items-center justify-center mb-2 mx-auto text-slate-500 opacity-60">
-                                            <span class="text-[12px] uppercase font-bold text-center">Official<br>Seal</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="w-32 border-t-[2.5px] border-slate-950 mb-1.5"></div>
-                                        <span class="text-slate-950 font-black font-montserrat text-[11px] uppercase tracking-widest">Principal / Controller</span>
+                                        <div class="w-40 border-t-[2.5px] border-slate-950 mb-1.5"></div>
+                                        <span class="text-slate-950 font-black font-montserrat text-[12px] uppercase tracking-widest">Principal Signature</span>
                                     </div>
                                 </div>
                             </div>
@@ -539,9 +536,9 @@
 
             printArea.classList.remove('hidden');
             printArea.innerHTML = resultHTML + `
-                <div class="mt-4 no-print max-w-xl mx-auto flex flex-wrap gap-3 justify-center">
+                <div class="mt-6 no-print max-w-xl mx-auto flex flex-wrap gap-4 justify-center">
                     <button onclick="executeIsolatedPrint('target-transcript-a4-node', 'portrait')" class="bg-slate-800 hover:bg-slate-900 text-amber-400 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-print mr-2"></i> Print Transcript</button>
-                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-600 hover:bg-amber-700 text-slate-950 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
+                    <button onclick="executeTranscriptPDFDownload('${student.id}', '${student.name}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-8 rounded-xl text-sm shadow-xl transition tracking-wide"><i class="fa-solid fa-file-pdf mr-2"></i> Download PDF</button>
                 </div>
             `;
             printArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -582,31 +579,22 @@
             });
 
             const sheetHTML = `
-                <div id="target-tabulation-a4-node" class="bg-slate-900 p-2 shadow-lg font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
-                    <div class="bg-white border-2 border-amber-500 rounded-xl p-6 h-full flex flex-col">
-                        <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
-                            <div class="flex items-center gap-4 text-left">
-                                <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-500 shadow-md shrink-0">
-                                <div>
-                                    <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest whitespace-nowrap">${madrasahName}</h1>
-                                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">MOHORA, CHANDGAON, CHITTGONG.</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="bg-slate-900 text-amber-400 px-4 py-1.5 rounded-lg font-black text-[11px] uppercase tracking-wider shadow-md border-b-4 border-slate-950 inline-block">
-                                    Tabulation Sheet
-                                </div>
-                            </div>
+                <div id="target-tabulation-a4-node" class="bg-white rounded-xl border-[4px] border-slate-900 shadow-lg overflow-hidden font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
+                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
+                        <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-400 shadow-md shrink-0">
+                        <div class="text-center flex-grow">
+                            <h2 class="font-brand text-xl md:text-2xl font-black tracking-widest uppercase">${madrasahName}</h2>
                         </div>
-                        <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800 mb-2">
-                            <span>${exm}</span>
-                            <span>Class: <span class="text-amber-700">${cls}</span></span>
-                            <span>Session: <span class="text-amber-700">${ses}</span></span>
-                            <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
-                        </div>
-                        <div class="p-2 flex-grow">
-                            <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
-                        </div>
+                        <span class="inline-block bg-amber-500 text-slate-900 px-3 py-1 rounded-full font-black text-[11px] uppercase tracking-wide shrink-0 whitespace-nowrap">Tabulation Sheet</span>
+                    </div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800">
+                        <span>${exm}</span>
+                        <span>Class: <span class="text-amber-700">${cls}</span></span>
+                        <span>Session: <span class="text-amber-700">${ses}</span></span>
+                        <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
+                    </div>
+                    <div class="p-2 flex-grow">
+                        <table class="w-full table-auto border-collapse border border-slate-900 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
                     </div>
                 </div>
             `;
