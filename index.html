@@ -25,26 +25,27 @@
         }
         .islamic-a4-sheet {
             width: 794px; height: 1060px; max-height: 1060px; background: #ffffff;
-            border: 12px solid #1e3a8a; 
+            border: 14px solid #1e3a8a; 
             padding: 6px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between;
         }
         .blue-inner-border {
-            border: 2.5px double #d97706; border-radius: 6px;
-            width: 100%; height: 100%; flex-grow: 1; padding: 16px 22px; box-sizing: border-box; 
+            border: 3px double #d97706; border-radius: 6px;
+            width: 100%; height: 100%; flex-grow: 1; padding: 22px 28px; box-sizing: border-box; 
             display: flex; flex-direction: column; justify-content: space-between; position: relative; background: #fdfdfd;
         }
         .marksheet-large-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 440px; height: 440px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
+            width: 460px; height: 460px; opacity: 0.04; pointer-events: none; z-index: 1; object-fit: contain; filter: grayscale(100%);
         }
 
         .student-info-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-            background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 10px 14px; border-radius: 6px; position: relative; z-index: 10;
+            background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 14px 16px; border-radius: 6px; position: relative; z-index: 10;
         }
-        .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 11.5px; color: #0f172a; line-height: 1.3; }
-        .info-item span.label { font-weight: 700; width: 110px; color: #475569; }
+        /* Increased Font Size for Student Info */
+        .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 13.5px; color: #0f172a; line-height: 1.4; }
+        .info-item span.label { font-weight: 700; width: 130px; color: #475569; }
         .info-item span.value { font-weight: 800; text-transform: uppercase; }
 
         @media print {
@@ -62,7 +63,8 @@
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
-            @page { size: A4 portrait; margin: 0mm !important; }
+            /* Fixed top margin to prevent sticking to the top edge */
+            @page { size: A4 portrait; margin: 12mm 0mm 0mm 0mm !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -201,7 +203,7 @@
             <div id="printable-area" class="mt-4 hidden no-print"></div>
         </div>
 
-        <!-- STUDENT VERIFICATION -->
+        <!-- CADET VERIFICATION -->
         <div id="page-public-student-search" class="hidden max-w-4xl mx-auto space-y-6 no-print">
             <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
                 <h2 class="text-xl font-bold text-center text-slate-900 mb-4"><i class="fa-solid fa-users text-amber-500 mr-2"></i>Student Verification</h2>
@@ -212,6 +214,9 @@
             </div>
         </div>
     </main>
+
+    <!-- Hidden iframe for Universal Print Isolation -->
+    <iframe id="isolated-print-frame" style="display:none; position:fixed; left:-9999px;"></iframe>
 
     <script>
         const firebaseConfig = {
@@ -244,8 +249,10 @@
 
         function initFirebaseSync() {
             db.ref('m3_settings/logo').on('value', snap => { if (snap.exists()) { universalLogo = snap.val(); applyUniversalLogo(); } });
+            db.ref('m3_settings/name').on('value', snap => { if (snap.exists()) { madrasahName = snap.val(); } });
             db.ref('m3_settings/publishStatus').on('value', snap => { if (snap.exists()) resultPublishStatus = snap.val(); });
             db.ref('m3_settings/publishDatetime').on('value', snap => { if (snap.exists()) resultPublishDatetime = snap.val(); });
+            
             db.ref('m3_settings/classSubjects').on('value', snap => { if (snap.exists()) classSubjectConfig = snap.val(); });
             
             db.ref('m3_students').on('value', snap => {
@@ -306,7 +313,7 @@
             });
 
             if (!anyMarkEntered) return { total: 0, grade: '-', gpa: '0.00', remarks: 'Pending' };
-            if (hasFail || mainCount === 0) return { total, grade: 'F', gpa: '0.00', remarks: 'Failed' };
+            if (hasFail || mainCount === 0) return { total: total, grade: 'F', gpa: '0.00', remarks: 'Failed' };
 
             let finalGpa = (mainSum / mainCount) + bonus;
             if (finalGpa > 5.0) finalGpa = 5.0;
@@ -394,7 +401,6 @@
 
             const studentFather = (regS && regS.father) ? regS.father : 'N/A';
             
-            // Filter out blank subjects
             let validSubjects = [];
             currentConfig.forEach((subObj, sIdx) => {
                 const markVal = (student.marks && student.marks[sIdx] !== undefined) ? String(student.marks[sIdx]).trim() : '';
@@ -404,13 +410,11 @@
             });
 
             const subjectCount = validSubjects.length;
-            
-            // Compact padding to strictly prevent 2nd page
             const rowPadClass =
-                subjectCount <= 6  ? 'py-2.5 px-3 text-sm md:text-base font-bold' :
-                subjectCount <= 9  ? 'py-1.5 px-3 text-xs md:text-sm font-bold' :
-                subjectCount <= 12 ? 'py-1 px-2.5 text-[11px] md:text-xs font-bold' :
-                                     'py-0.5 px-2 text-[10px] md:text-[10.5px] font-bold';
+                subjectCount <= 6  ? 'py-3 px-4 text-base md:text-lg font-bold' :
+                subjectCount <= 9  ? 'py-2 px-3 text-sm md:text-base font-bold' :
+                subjectCount <= 12 ? 'py-1.5 px-3 text-xs md:text-sm font-bold' :
+                                     'py-1 px-2.5 text-[11px] md:text-xs font-bold';
 
             let subjectRowsHTML = '';
             if (subjectCount === 0) {
@@ -418,7 +422,7 @@
             } else {
                 validSubjects.forEach(item => {
                     const gradeInfo = getSubjectGradeInfo(item.mark, item.subObj.full);
-                    const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[9px] bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
+                    const typeLabel = item.subObj.type === 'Optional' ? ' <span class="text-[10px] bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-bold ml-1 font-montserrat">Optional</span>' : '';
                     subjectRowsHTML += `
                         <tr class="border-b border-gray-300 bg-transparent hover:bg-slate-50">
                             <td class="${rowPadClass} border-r border-slate-300 text-slate-900">${item.subObj.name}${typeLabel}</td>
@@ -443,38 +447,38 @@
                                 
                                 <div>
                                     <div class="text-center mb-1">
-                                        <h2 class="arabic-calligraphy text-xl text-slate-800">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
+                                        <h2 class="arabic-calligraphy text-3xl text-slate-800">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h2>
                                     </div>
                                     
                                     <!-- HEADER -->
                                     <div class="flex items-center justify-between border-b-2 border-slate-300 pb-2 mb-2.5">
-                                        <div class="flex items-center gap-3 w-4/5 text-left">
+                                        <div class="flex items-center gap-4 w-4/5 text-left">
                                             <div class="shrink-0">
-                                                <img src="${universalLogo}" alt="Logo" class="w-16 h-16 object-contain p-1 border-[2.5px] border-amber-500 rounded-full shadow-md bg-white">
+                                                <img src="${universalLogo}" alt="Logo" class="w-20 h-20 object-contain p-1.5 border-[3px] border-amber-500 rounded-full shadow-md bg-white">
                                             </div>
                                             <div>
-                                                <h1 class="font-brand text-[20px] font-black text-slate-950 tracking-wider uppercase whitespace-nowrap leading-tight">${madrasahName}</h1>
-                                                <p class="text-[10px] text-slate-600 font-bold mt-0.5 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTGONG.</p>
+                                                <h1 class="font-brand text-[26px] font-black text-slate-950 tracking-widest uppercase whitespace-nowrap leading-tight">${madrasahName}</h1>
+                                                <p class="text-[12.5px] text-slate-600 font-bold mt-1 tracking-widest uppercase">MOHORA, CHANDGAON, CHITTGONG.</p>
                                             </div>
                                         </div>
                                         <div class="w-1/5 text-right flex flex-col items-end justify-center space-y-1">
-                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-12 h-12 border border-slate-300 rounded p-0.5 opacity-90 shadow-sm">
-                                            <p class="font-montserrat text-[7.5px] font-black text-slate-700 tracking-widest">VERIFIED</p>
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified+Result:+${student.id}" class="w-16 h-16 border border-slate-300 rounded p-0.5 opacity-90 shadow-sm">
+                                            <p class="font-montserrat text-[10px] font-black text-slate-700 tracking-widest mt-1">VERIFIED</p>
                                         </div>
                                     </div>
 
                                     <!-- TAGS -->
-                                    <div class="flex flex-col items-center justify-center space-y-1.5 mb-2.5 relative z-10">
-                                        <div class="bg-amber-100 border border-amber-300 text-amber-900 px-5 py-0.5 rounded-full font-bold text-[9.5px] uppercase tracking-widest shadow-sm font-montserrat">
+                                    <div class="flex flex-col items-center justify-center space-y-2 mb-4 relative z-10">
+                                        <div class="bg-amber-100 border border-amber-300 text-amber-900 px-6 py-1.5 rounded-full font-bold text-[12px] uppercase tracking-widest shadow-sm font-montserrat">
                                             ${student.exam || 'ANNUAL EXAMINATION'}
                                         </div>
-                                        <div class="bg-slate-800 text-amber-400 px-6 py-1 rounded-lg font-black text-[11px] uppercase tracking-widest shadow font-montserrat border-b-2 border-slate-950">
+                                        <div class="bg-slate-800 text-amber-400 px-8 py-2 rounded-lg font-black text-[15px] uppercase tracking-widest shadow font-montserrat border-b-2 border-slate-950">
                                             ACADEMIC TRANSCRIPT
                                         </div>
                                     </div>
 
                                     <!-- STUDENT INFO GRID -->
-                                    <div class="student-info-grid mb-2.5">
+                                    <div class="student-info-grid mb-3">
                                         <div class="info-item"><span class="label">STUDENT ID</span><span class="value">: ${student.id}</span></div>
                                         <div class="info-item"><span class="label">CLASS</span><span class="value">: ${student.class}</span></div>
                                         <div class="info-item"><span class="label">STUDENT NAME</span><span class="value">: ${student.name}</span></div>
@@ -483,15 +487,15 @@
                                     </div>
 
                                     <!-- MARKS TABLE -->
-                                    <div class="mt-1">
+                                    <div class="mt-2">
                                         <table class="w-full border-collapse border-2 border-slate-900 rounded-lg overflow-hidden bg-white shadow-sm">
                                             <thead>
-                                                <tr class="bg-slate-900 text-amber-400 uppercase text-xs font-montserrat tracking-wide">
-                                                    <th class="py-1.5 px-3 text-left border-r border-slate-700">Course / Subject Title</th>
-                                                    <th class="py-1.5 px-2 text-center w-20 border-r border-slate-700">Full Marks</th>
-                                                    <th class="py-1.5 px-2 text-center w-24 border-r border-slate-700">Obtained</th>
-                                                    <th class="py-1.5 px-2 text-center w-20 border-r border-slate-700">Grade</th>
-                                                    <th class="py-1.5 px-2 text-center w-20">GP</th>
+                                                <tr class="bg-slate-900 text-amber-400 uppercase text-sm md:text-base font-montserrat tracking-wide">
+                                                    <th class="py-2 px-3 text-left border-r border-slate-700">Course / Subject Title</th>
+                                                    <th class="py-2 px-2 text-center w-20 border-r border-slate-700">Full Marks</th>
+                                                    <th class="py-2 px-2 text-center w-24 border-r border-slate-700">Obtained</th>
+                                                    <th class="py-2 px-2 text-center w-20 border-r border-slate-700">Grade</th>
+                                                    <th class="py-2 px-2 text-center w-20">GP</th>
                                                 </tr>
                                             </thead>
                                             <tbody>${subjectRowsHTML}</tbody>
@@ -499,35 +503,35 @@
                                     </div>
 
                                     <!-- SUMMARY -->
-                                    <div class="border-2 border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs font-bold text-slate-950 mt-2.5 bg-slate-50 relative z-10 shadow-sm">
-                                        <div class="text-center px-3">
-                                            <span class="text-slate-700 block text-[8.5px] uppercase font-montserrat tracking-wide">Total Marks</span>
-                                            <span class="text-xl text-amber-700 font-black">${stats.total}</span>
+                                    <div class="border-2 border-slate-800 p-4 rounded-xl flex justify-between items-center text-sm font-bold text-slate-950 mt-4 bg-slate-50 relative z-10 shadow-sm">
+                                        <div class="text-center px-4">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Total Marks</span>
+                                            <span class="text-3xl text-amber-700 font-black">${stats.total}</span>
                                         </div>
-                                        <div class="text-center border-x-2 border-slate-300 px-6">
-                                            <span class="text-slate-700 block text-[8.5px] uppercase font-montserrat tracking-wide">GPA</span>
-                                            <span class="text-xl text-slate-900 font-black">${stats.gpa}</span>
+                                        <div class="text-center border-x-2 border-slate-300 px-8">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">GPA</span>
+                                            <span class="text-3xl text-slate-900 font-black">${stats.gpa}</span>
                                         </div>
-                                        <div class="text-center border-r-2 border-slate-300 pr-6">
-                                            <span class="text-slate-700 block text-[8.5px] uppercase font-montserrat tracking-wide">Letter Grade</span>
-                                            <span class="text-xl text-slate-900 font-black">${stats.grade}</span>
+                                        <div class="text-center border-r-2 border-slate-300 pr-8">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Letter Grade</span>
+                                            <span class="text-3xl text-slate-900 font-black">${stats.grade}</span>
                                         </div>
-                                        <div class="text-right px-3">
-                                            <span class="text-slate-700 block text-[8.5px] uppercase font-montserrat tracking-wide">Remarks</span>
-                                            <span class="text-base text-slate-900 font-black uppercase">${stats.remarks}</span>
+                                        <div class="text-right px-4">
+                                            <span class="text-slate-700 block text-[11px] uppercase font-montserrat tracking-wide mb-1">Remarks</span>
+                                            <span class="text-2xl text-slate-900 font-black uppercase">${stats.remarks}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- SIGNATURES (FIXED AT THE VERY BOTTOM OF SHEET) -->
-                                <div class="pt-6 pb-1 flex justify-between items-end text-xs text-slate-900 font-bold px-6">
+                                <!-- SIGNATURES -->
+                                <div class="pt-8 pb-2 flex justify-between items-end text-sm text-slate-900 font-bold px-8">
                                     <div class="text-center">
-                                        <div class="w-36 border-t-[2px] border-slate-800 mb-1"></div>
-                                        <span class="font-montserrat text-[10.5px] uppercase tracking-wide">Guardian Signature</span>
+                                        <div class="w-48 border-t-[2px] border-slate-800 mb-1.5"></div>
+                                        <span class="font-montserrat text-[13px] uppercase tracking-wide">Guardian Signature</span>
                                     </div>
                                     <div class="text-center">
-                                        <div class="w-36 border-t-[2px] border-slate-950 mb-1"></div>
-                                        <span class="text-slate-950 font-black font-montserrat text-[10.5px] uppercase tracking-widest">Principal Signature</span>
+                                        <div class="w-48 border-t-[2.5px] border-slate-950 mb-1.5"></div>
+                                        <span class="text-slate-950 font-black font-montserrat text-[13px] uppercase tracking-widest">Principal Signature</span>
                                     </div>
                                 </div>
 
@@ -594,27 +598,31 @@
             });
 
             const sheetHTML = `
-                <div id="target-tabulation-a4-node" class="bg-white rounded-xl border-[4px] border-slate-900 shadow-lg overflow-hidden font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
-                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-6 py-4 flex items-center justify-between gap-4 border-b-4 border-amber-500">
-                        <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-400 shadow-md shrink-0">
-                        <div class="text-center flex-grow">
-                            <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest whitespace-nowrap">${madrasahName}</h1>
-                            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">MOHORA, CHANDGAON, CHITTGONG.</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="bg-slate-900 text-amber-400 px-4 py-1.5 rounded-lg font-black text-[11px] uppercase tracking-wider shadow-md border-b-4 border-slate-950 inline-block">
-                                Tabulation Sheet
+                <div id="target-tabulation-a4-node" class="bg-slate-900 p-2 shadow-lg font-serif-roman mt-4 w-[1123px] min-h-[794px] mx-auto box-border flex flex-col justify-start">
+                    <div class="bg-white border-2 border-amber-500 rounded-xl p-6 h-full flex flex-col">
+                        <div class="flex items-center justify-between border-b-2 border-slate-300 pb-4 mb-4">
+                            <div class="flex items-center gap-4 text-left">
+                                <img src="${universalLogo}" class="w-16 h-16 object-contain bg-white p-1 rounded-full border-2 border-amber-500 shadow-md shrink-0">
+                                <div>
+                                    <h1 class="font-brand text-2xl font-black text-slate-900 uppercase tracking-widest whitespace-nowrap">${madrasahName}</h1>
+                                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider mt-1">MOHORA, CHANDGAON, CHITTGONG.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="bg-slate-900 text-amber-400 px-4 py-1.5 rounded-lg font-black text-[11px] uppercase tracking-wider shadow-md border-b-4 border-slate-950 inline-block">
+                                    Tabulation Sheet
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800 mb-2">
-                        <span>${exm}</span>
-                        <span>Class: <span class="text-amber-700">${cls}</span></span>
-                        <span>Session: <span class="text-amber-700">${ses}</span></span>
-                        <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
-                    </div>
-                    <div class="p-2 flex-grow">
-                        <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        <div class="flex flex-wrap justify-between items-center gap-2 px-6 py-2.5 bg-slate-100 border-b border-slate-300 text-xs md:text-sm font-bold text-slate-800 mb-2">
+                            <span>${exm}</span>
+                            <span>Class: <span class="text-amber-700">${cls}</span></span>
+                            <span>Session: <span class="text-amber-700">${ses}</span></span>
+                            <span>Total Students: <span class="text-amber-700">${filtered.length}</span></span>
+                        </div>
+                        <div class="p-2 flex-grow">
+                            <table class="w-full table-auto border-collapse border border-slate-800 text-[9px] md:text-[10px]"><thead>${thHTML}</thead><tbody>${rowsHTML}</tbody></table>
+                        </div>
                     </div>
                 </div>
             `;
@@ -629,6 +637,10 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating...';
             window.scrollTo(0, 0);
             try {
+                const sheet = document.getElementById('target-transcript-a4-node');
+                sheet.style.transform = 'none'; sheet.style.height = '1060px';
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                
                 const opt = {
                     margin: 0, 
                     filename: `Transcript_${studentId}_${studentName.replace(/\s+/g, '_')}.pdf`,
@@ -640,7 +652,7 @@
             } finally { btn.innerHTML = origText; }
         }
 
-        // 100% RELIABLE DIRECT PRINT SYSTEM (STRICT 1 PAGE LOCK)
+        // PERFECT SINGLE PAGE DIRECT PRINT WITH TOP MARGIN
         function executeDirectPrint(targetNodeId, orientation) {
             let pageStyle = document.getElementById('dynamic-print-style');
             if (!pageStyle) {
@@ -651,7 +663,7 @@
             
             pageStyle.innerHTML = `
                 @media print {
-                    @page { size: A4 ${orientation}; margin: 0 !important; }
+                    @page { size: A4 ${orientation}; margin: 10mm 0mm 0mm 0mm !important; }
                     html, body { 
                         width: 100% !important; 
                         height: 100% !important; 
@@ -666,6 +678,9 @@
                         box-sizing: border-box !important;
                         page-break-after: avoid !important;
                         page-break-inside: avoid !important;
+                        margin: 0 auto !important;
+                        transform: scale(0.96) !important;
+                        transform-origin: top center !important;
                     }
                 }
             `;
