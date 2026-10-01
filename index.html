@@ -54,14 +54,12 @@
             #printable-area, #printable-area * { visibility: visible !important; }
             #printable-area { 
                 display: flex !important; justify-content: center; align-items: flex-start;
-                position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; 
-                margin: 0 !important; padding: 0 !important; padding-top: 15px !important;
+                position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 0 !important; padding-top: 15px !important;
             }
             .a4-print-wrapper {
                 box-shadow: none !important; margin: 0 auto !important;
                 page-break-inside: avoid !important; break-inside: avoid !important;
             }
-            /* MARGIN 0 COMPLETELY HIDES BROWSER DATES, LINKS, AND TITLES */
             @page { size: A4 portrait; margin: 0 !important; }
             .no-print { display: none !important; }
         }
@@ -201,7 +199,7 @@
             <div id="printable-area" class="mt-4 hidden no-print"></div>
         </div>
 
-        <!-- STUDENT VERIFICATION -->
+        <!-- CADET VERIFICATION -->
         <div id="page-public-student-search" class="hidden max-w-4xl mx-auto space-y-6 no-print">
             <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
                 <h2 class="text-xl font-bold text-center text-slate-900 mb-4"><i class="fa-solid fa-users text-amber-500 mr-2"></i>Student Verification</h2>
@@ -227,7 +225,10 @@
         const db = firebase.database();
 
         let universalLogo = localStorage.getItem('m3_logo') || 'https://i.ibb.co.com/jP4YpCjX/annur-logo.jpg';
+        
+        // FORCED LOCAL NAME PREVENTING FIREBASE OVERRIDE
         let madrasahName = 'REZA-E MUSTAFA D. MODEL MADRASA';
+        
         let resultPublishStatus = 'PUBLISHED'; let resultPublishDatetime = '';
         
         let subjectConfig = [
@@ -244,7 +245,9 @@
 
         function initFirebaseSync() {
             db.ref('m3_settings/logo').on('value', snap => { if (snap.exists()) { universalLogo = snap.val(); applyUniversalLogo(); } });
-            db.ref('m3_settings/name').on('value', snap => { if (snap.exists()) { madrasahName = snap.val(); } });
+            
+            // Name sync completely removed here to ensure the hardcoded D. MODEL MADRASA is always shown
+            
             db.ref('m3_settings/publishStatus').on('value', snap => { if (snap.exists()) resultPublishStatus = snap.val(); });
             db.ref('m3_settings/publishDatetime').on('value', snap => { if (snap.exists()) resultPublishDatetime = snap.val(); });
             db.ref('m3_settings/classSubjects').on('value', snap => { if (snap.exists()) classSubjectConfig = snap.val(); });
@@ -405,7 +408,6 @@
 
             const subjectCount = validSubjects.length;
             
-            // PERFECT MEDIUM PADDING
             const rowPadClass =
                 subjectCount <= 6  ? 'py-3.5 px-4 text-[15px] font-bold' :
                 subjectCount <= 8  ? 'py-2.5 px-3 text-[14px] font-bold' :
@@ -520,15 +522,15 @@
                                     </div>
                                 </div>
 
-                                <!-- SIGNATURES -->
+                                <!-- SIGNATURES (UPDATED) -->
                                 <div class="pt-8 pb-1 flex justify-between items-end text-xs text-slate-900 font-bold px-6">
                                     <div class="text-center">
                                         <div class="w-44 border-t-[2px] border-slate-800 mb-1.5"></div>
-                                        <span class="font-montserrat text-[11px] uppercase tracking-wide">Guardian Signature</span>
+                                        <span class="font-montserrat text-[12px] uppercase tracking-wide">Guardian Signature</span>
                                     </div>
                                     <div class="text-center">
                                         <div class="w-44 border-t-[2.5px] border-slate-950 mb-1.5"></div>
-                                        <span class="text-slate-950 font-black font-montserrat text-[11px] uppercase tracking-widest">Principal Signature</span>
+                                        <span class="text-slate-950 font-black font-montserrat text-[12px] uppercase tracking-widest">Head Teacher Signature</span>
                                     </div>
                                 </div>
 
