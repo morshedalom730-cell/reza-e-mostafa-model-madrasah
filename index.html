@@ -18,7 +18,7 @@
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .arabic-calligraphy { font-family: 'Aref Ruqaa', 'Amiri', serif; letter-spacing: 0px; line-height: 1.3; }
         
-        /* EXACT 1-PAGE A4 SYSTEM (PREVENTS 2ND PAGE COMPLETELY) */
+        /* EXACT 1-PAGE A4 SYSTEM */
         .a4-print-wrapper {
             width: 794px; height: 1060px; max-height: 1060px; background-color: #ffffff; margin: 0 auto;
             position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); box-sizing: border-box;
@@ -43,7 +43,6 @@
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
             background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 12px 16px; border-radius: 6px; position: relative; z-index: 10;
         }
-        /* Adjusted Font Size for Student Info to Medium */
         .info-item { display: flex; font-family: 'Montserrat', sans-serif; font-size: 12.5px; color: #0f172a; line-height: 1.4; }
         .info-item span.label { font-weight: 700; width: 130px; color: #475569; }
         .info-item span.value { font-weight: 800; text-transform: uppercase; }
@@ -55,16 +54,15 @@
             #printable-area, #printable-area * { visibility: visible !important; }
             #printable-area { 
                 display: flex !important; justify-content: center; align-items: flex-start;
-                position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 0 !important;
+                position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; 
+                margin: 0 !important; padding: 0 !important; padding-top: 15px !important;
             }
             .a4-print-wrapper {
-                box-shadow: none !important;
-                margin: 0 auto !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+                box-shadow: none !important; margin: 0 auto !important;
+                page-break-inside: avoid !important; break-inside: avoid !important;
             }
-            /* Fixed top margin to prevent sticking to the top edge */
-            @page { size: A4 portrait; margin: 12mm 0mm 0mm 0mm !important; }
+            /* MARGIN 0 COMPLETELY HIDES BROWSER DATES, LINKS, AND TITLES */
+            @page { size: A4 portrait; margin: 0 !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -203,7 +201,7 @@
             <div id="printable-area" class="mt-4 hidden no-print"></div>
         </div>
 
-        <!-- CADET VERIFICATION -->
+        <!-- STUDENT VERIFICATION -->
         <div id="page-public-student-search" class="hidden max-w-4xl mx-auto space-y-6 no-print">
             <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
                 <h2 class="text-xl font-bold text-center text-slate-900 mb-4"><i class="fa-solid fa-users text-amber-500 mr-2"></i>Student Verification</h2>
@@ -364,7 +362,7 @@
         }
 
         // ===============================================
-        // EXACT SINGLE-PAGE MARKSHEET GENERATOR (MEDIUM FONTS)
+        // EXACT SINGLE-PAGE MARKSHEET GENERATOR
         // ===============================================
         function searchResult() {
             const id = document.getElementById('search-student-id').value.trim().toUpperCase();
@@ -407,7 +405,7 @@
 
             const subjectCount = validSubjects.length;
             
-            // PERFECT MEDIUM PADDING & FONT SCALING
+            // PERFECT MEDIUM PADDING
             const rowPadClass =
                 subjectCount <= 6  ? 'py-3.5 px-4 text-[15px] font-bold' :
                 subjectCount <= 8  ? 'py-2.5 px-3 text-[14px] font-bold' :
@@ -501,7 +499,7 @@
                                         </table>
                                     </div>
 
-                                    <!-- SUMMARY BOX (MEDIUM FONTS) -->
+                                    <!-- SUMMARY BOX -->
                                     <div class="border-[3px] border-slate-800 p-3 rounded-xl flex justify-between items-center text-sm font-bold text-slate-950 mt-3.5 bg-slate-50 relative z-10 shadow-sm">
                                         <div class="text-center px-4">
                                             <span class="text-slate-700 block text-[10px] uppercase font-montserrat tracking-wide mb-1">Total Marks</span>
@@ -651,7 +649,7 @@
             } finally { btn.innerHTML = origText; }
         }
 
-        // PERFECT SINGLE PAGE DIRECT PRINT WITH TOP MARGIN
+        // PERFECT SINGLE PAGE DIRECT PRINT WITH TOP MARGIN & ZERO BROWSER TEXTS
         function executeDirectPrint(targetNodeId, orientation) {
             let pageStyle = document.getElementById('dynamic-print-style');
             if (!pageStyle) {
@@ -662,7 +660,7 @@
             
             pageStyle.innerHTML = `
                 @media print {
-                    @page { size: A4 ${orientation}; margin: 12mm 0mm 0mm 0mm !important; }
+                    @page { size: A4 ${orientation}; margin: 0 !important; }
                     html, body { 
                         width: 100% !important; 
                         height: 100% !important; 
@@ -678,6 +676,7 @@
                         page-break-after: avoid !important;
                         page-break-inside: avoid !important;
                         margin: 0 auto !important;
+                        margin-top: 15px !important;
                         transform: scale(0.96) !important;
                         transform-origin: top center !important;
                     }
